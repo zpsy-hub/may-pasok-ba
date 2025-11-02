@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install web deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r web/requirements.txt
+      - name: Run tests (if any)
+        run: |
+          echo "No tests configured; add pytest and tests/ to run them."
+
+  deploy:
+    name: Deploy to Supabase (placeholder)
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show environment info
+        run: |
+          echo "Deploy step will run only when you set SUPABASE_PROJECT_REF and SUPABASE_ACCESS_TOKEN as repository secrets."
+      - name: Run Supabase deploy script
+        if: secrets.SUPABASE_PROJECT_REF && secrets.SUPABASE_ACCESS_TOKEN
+        run: |
+          pwsh -File ./scripts/deploy_to_supabase.ps1
+        env:
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+# Notes:
+# - The deploy job is a placeholder. To enable fully automated deploys, install the Supabase CLI in the workflow
+#   and run the appropriate `supabase` commands (login/link/deploy). Use repository secrets for credentials.
+# - Keep secrets secure: SUPABASE_ACCESS_TOKEN should be stored in GitHub Secrets. Read Supabase docs for exact
+#   CLI commands for hosting or edge function deployments.

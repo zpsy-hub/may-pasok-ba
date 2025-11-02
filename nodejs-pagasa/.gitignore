@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+
+# Temporary files
+*.tmp
+*.temp
+temp_*.pdf
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output (commit pagasa_status.json for GitHub Actions)
+# pagasa_status.json is intentionally tracked

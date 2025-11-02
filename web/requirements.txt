@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic
+httpx
+# Add supabase-py if you plan to call Supabase from Python
+# supabase
+# For ML model loading: joblib, scikit-learn
+joblib
+scikit-learn

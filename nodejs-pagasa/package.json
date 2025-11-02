@@ -1,0 +1,29 @@
+{
+  "name": "nodejs-pagasa",
+  "version": "1.0.0",
+  "description": "PAGASA typhoon bulletin parser and web scraper for May Pasok Ba prediction system",
+  "main": "pagasa_parser.js",
+  "scripts": {
+    "start": "node pagasa_parser.js",
+    "test": "node test_pagasa_parser.js",
+    "check": "node pagasa_parser.js && node -p \"JSON.stringify(require('./pagasa_status.json'), null, 2)\""
+  },
+  "keywords": [
+    "pagasa",
+    "typhoon",
+    "weather",
+    "philippines",
+    "scraper",
+    "class-suspension"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@pagasa-parser/formatter-signals": "^0.1.2",
+    "@pagasa-parser/source-pdf": "^1.1.9",
+    "axios": "^1.12.2",
+    "cheerio": "^1.1.2",
+    "dotenv": "^17.2.2",
+    "pagasa-parser": "^2.2.4"
+  }
+}

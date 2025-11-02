@@ -1,0 +1,84 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Run every hour to check for typhoon updates
+  schedule:
+    - cron: '0 * * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+  
+  # Run on push to main branch
+  push:
+    branches:
+      - main
+
+jobs:
+  fetch-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install Node.js dependencies
+        run: |
+          cd nodejs-pagasa
+          npm install
+      
+      - name: Install Python dependencies
+        run: |
+          pip install -r requirements.txt
+      
+      - name: Fetch PAGASA typhoon status
+        id: pagasa
+        run: |
+          cd nodejs-pagasa
+          node pagasa_parser.js
+          cd ..
+          
+          # Check if pagasa_status.json was created
+          if [ -f "pagasa_status.json" ]; then
+            echo "✅ PAGASA status fetched successfully"
+            cat pagasa_status.json
+            
+            # Copy to web directory for deployment
+            cp pagasa_status.json web/predictions/pagasa_status.json
+          else
+            echo "⚠️ PAGASA status file not created, using fallback"
+            echo '{"hasActiveTyphoon":false,"message":"Data unavailable"}' > web/predictions/pagasa_status.json
+          fi
+      
+      - name: Run predictions (if applicable)
+        continue-on-error: true
+        run: |
+          # Run your model predictions here if needed
+          # python model-training/train.py --predict
+          echo "Prediction step placeholder"
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./web
+          publish_branch: gh-pages
+          keep_files: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Update predictions and PAGASA status'
+      
+      - name: Summary
+        run: |
+          echo "🎉 Deployment complete!"
+          echo "📊 PAGASA status: $(cat web/predictions/pagasa_status.json | jq -r .message)"
+          echo "🌐 Site URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"

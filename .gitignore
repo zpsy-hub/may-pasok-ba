@@ -1,0 +1,78 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints/
+
+# Environment variables
+.env
+.env.local
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Data files (don't commit large datasets)
+*.csv
+*.json
+*.jsonl
+!requirements.txt
+!package.json
+!package-lock.json
+
+# Keep structure but not data content
+model-training/data/raw/*.csv
+model-training/data/processed/*.csv
+!model-training/data/processed/*_metadata.json
+src/weather/weather_data/*.json
+src/weather/weather_data/*.jsonl
+
+# Supabase credentials (NEVER commit these!)
+supabase_url.txt
+supabase_key.txt
+
+# Model files (too large)
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+model-training/models/*.pkl
+model-training/models/*.joblib
+
+# Keep web prediction files for GitHub Pages
+!web/predictions/*.json
+!web/*.json
+!web/predictions_latest.json

@@ -1,0 +1,181 @@
+{
+  "creation_date": "2025-11-02T02:03:45.806731",
+  "random_seed": 42,
+  "split_strategy": "Chronological with rainy season boundary (May 31 / Jun 1)",
+  "date_range": {
+    "start": "2022-08-22",
+    "end": "2025-08-25",
+    "total_days": 1100
+  },
+  "lgus": {
+    "count": 17,
+    "ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16
+    ],
+    "names": [
+      "Manila",
+      "Quezon City",
+      "Caloocan",
+      "Las Pi\u00f1as",
+      "Makati",
+      "Malabon",
+      "Mandaluyong",
+      "Marikina",
+      "Muntinlupa",
+      "Navotas",
+      "Para\u00f1aque",
+      "Pasay",
+      "Pasig",
+      "Pateros",
+      "San Juan",
+      "Taguig",
+      "Valenzuela"
+    ]
+  },
+  "train": {
+    "date_range": [
+      "2022-08-22",
+      "2024-05-31"
+    ],
+    "rows": 11033,
+    "days": 649,
+    "suspensions": 110,
+    "suspension_rate": 0.009970089730807577,
+    "rainy_months": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "validation": {
+    "date_range": [
+      "2024-06-01",
+      "2024-11-30"
+    ],
+    "rows": 3111,
+    "days": 183,
+    "suspensions": 201,
+    "suspension_rate": 0.06460945033751206,
+    "rainy_months": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ]
+  },
+  "test": {
+    "date_range": [
+      "2024-12-01",
+      "2025-08-25"
+    ],
+    "rows": 4556,
+    "days": 268,
+    "suspensions": 97,
+    "suspension_rate": 0.02129060579455663,
+    "rainy_months": [
+      6,
+      7,
+      8
+    ]
+  },
+  "features": {
+    "total_count": 39,
+    "encoding": "numeric ordinal (NO one-hot)",
+    "lgu_id_range": [
+      0,
+      16
+    ],
+    "phase1_features": [
+      "date",
+      "year",
+      "month",
+      "day",
+      "day_of_week",
+      "is_rainy_season",
+      "school_year",
+      "month_from_sy_start",
+      "is_holiday",
+      "is_school_day",
+      "lgu_id",
+      "lgu_name",
+      "mean_flood_risk_score",
+      "flood_risk_classification",
+      "suspension_occurred",
+      "reason_category"
+    ],
+    "weather_features_hist": [
+      "hist_precipitation_sum_t1",
+      "hist_wind_speed_max_t1",
+      "hist_wind_gusts_max_t1",
+      "hist_pressure_msl_min_t1",
+      "hist_temperature_max_t1",
+      "hist_relative_humidity_mean_t1",
+      "hist_cloud_cover_max_t1",
+      "hist_dew_point_mean_t1",
+      "hist_apparent_temperature_max_t1",
+      "hist_weather_code_t1",
+      "hist_precip_sum_7d",
+      "hist_precip_sum_3d",
+      "hist_wind_max_7d"
+    ],
+    "weather_features_fcst": [
+      "fcst_precipitation_sum",
+      "fcst_precipitation_hours",
+      "fcst_wind_speed_max",
+      "fcst_wind_gusts_max",
+      "fcst_pressure_msl_min",
+      "fcst_temperature_max",
+      "fcst_relative_humidity_mean",
+      "fcst_cloud_cover_max",
+      "fcst_dew_point_mean",
+      "fcst_cape_max"
+    ]
+  },
+  "anti_leakage": {
+    "weather_temporal_lag": "t-1 (all weather features)",
+    "ncr_wide_weather": true,
+    "no_one_hot_encoding": true,
+    "chronological_splits": true,
+    "rainy_season_protection": "Test includes NEW rainy season (2025)"
+  },
+  "cross_validation": {
+    "method": "TimeSeriesSplit",
+    "n_splits": 5,
+    "models_tested": [
+      "LogReg (baseline)",
+      "RandomForest"
+    ],
+    "mean_f2_scores": [
+      0.021455223880597014,
+      0.0
+    ],
+    "interpretation": "CV validates split stability across time"
+  },
+  "statistical_tests": {
+    "stationarity_tested": 8,
+    "stationary_features": 7,
+    "normality_tested": 9,
+    "normal_features": 0
+  }
+}
