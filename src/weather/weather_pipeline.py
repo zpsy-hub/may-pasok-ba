@@ -11,8 +11,8 @@ from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 import json
 
-from pagasa_checker import PAGASAChecker
-from openmeteo_collector import OpenMeteoCollector
+from .pagasa_checker import PAGASAChecker
+from .openmeteo_collector import OpenMeteoCollector
 
 
 class WeatherDataPipeline:

@@ -578,18 +578,54 @@
             console.log('Predictions count:', predictions.length);
             if (predictions.length === 0) return;
             const avgProbability = predictions.reduce((sum, p) => sum + p.suspension_probability, 0) / predictions.length;
+            
+            // Check if any prediction has risk tier data (new format)
+            const firstPredictionWithTier = predictions.find(p => p.risk_tier);
+            let metroRiskTier = null;
+            let metroWeatherContext = null;
+            
+            if (firstPredictionWithTier) {
+                // Aggregate risk tier for Metro Manila
+                const tierCounts = { normal: 0, alert: 0, suspension: 0 };
+                predictions.forEach(p => {
+                    if (p.risk_tier && p.risk_tier.tier) {
+                        tierCounts[p.risk_tier.tier]++;
+                    }
+                });
+                
+                // Determine dominant tier
+                const dominantTier = Object.entries(tierCounts).reduce((max, [tier, count]) => 
+                    count > max.count ? { tier, count } : max, 
+                    { tier: 'normal', count: 0 }
+                ).tier;
+                
+                // Use the first prediction's tier as template and adjust
+                metroRiskTier = { ...firstPredictionWithTier.risk_tier };
+                metroRiskTier.tier = dominantTier;
+                metroRiskTier.title = metroRiskTier.title.replace(/\b\d+\b/, predictions.length); // Replace count if present
+                metroWeatherContext = firstPredictionWithTier.weather_context;
+                
+                console.log('Risk tier aggregation:', tierCounts, 'Dominant:', dominantTier);
+            }
+            
             // Use provided summary recommendation if present; otherwise derive from avgProbability
             const derivedRec = avgProbability >= 0.7 ? 'Suspend' : (avgProbability >= 0.3 ? 'Monitor' : 'Proceed');
             const recToShow = (summary && summary.overall_recommendation) ? summary.overall_recommendation : derivedRec;
             console.log('Recommendation:', recToShow, 'Probability:', avgProbability);
-            renderPredictionCard(recToShow, avgProbability);
+            
+            renderPredictionCard(recToShow, avgProbability, metroRiskTier, metroWeatherContext);
             renderWeatherMetrics(predictions);
         }
 
         function renderLGUDetails(lguName) {
             const lguData = appState.predictionData.predictions.find(p => p.lgu === lguName);
             if (!lguData) return;
-            renderPredictionCard(lguData.recommendation, lguData.suspension_probability);
+            
+            // Check if risk tier data exists (new format)
+            const riskTier = lguData.risk_tier || null;
+            const weatherContext = lguData.weather_context || null;
+            
+            renderPredictionCard(lguData.recommendation, lguData.suspension_probability, riskTier, weatherContext);
             // renderWeatherMetrics([lguData]); // Removed - simplified UI
             renderRecommendationReasons(lguData);
             // renderHourlyForecast(lguName); // Commented out - using Key Hours and Rain Chart instead
@@ -625,12 +661,115 @@
             renderRainChart(weatherData, startIndex);
         }
 
-        function renderPredictionCard(recommendation, probability) {
+        function renderPredictionCard(recommendation, probability, riskTier = null, weatherContext = null) {
+            // Risk tier takes precedence if available
+            if (riskTier) {
+                renderRiskTierCard(riskTier, weatherContext, probability);
+                return;
+            }
+            
+            // Fallback to legacy rendering
             const recMap = { proceed: { text: 'Classes Expected', className: 'classes-expected', context: "Weather conditions appear stable." }, monitor: { text: 'Monitor', className: 'monitor', context: "Weather is uncertain. Monitor official announcements." }, suspend: { text: 'Suspend', className: 'suspend', context: "Hazardous weather is predicted, suspension is likely." } };
             const rec = recMap[recommendation.toLowerCase()] || recMap.monitor;
             let weatherEmoji = probability > 0.7 ? '⛈️' : probability > 0.5 ? '🌧️' : probability > 0.2 ? '🌦️' : '⛅';
             dom.predictionCard.className = `prediction-card bg-${rec.className}`;
             dom.predictionCard.innerHTML = `<div class="recommendation-badge ${rec.className}">${rec.text}</div><p class="recommendation-context">${rec.context}</p><div><span class="probability-value">${(probability * 100).toFixed(0)}%</span><span class="probability-label">Chance of Suspension</span></div><div class="weather-icon-large">${weatherEmoji}</div>`;
+        }
+        
+        function renderRiskTierCard(riskTier, weatherContext, probability) {
+            const tierColorMap = {
+                'normal': { bg: 'linear-gradient(135deg, #d1fae5, #f8f9fa)', border: '#22c55e', text: '#065f46' },
+                'alert': { bg: 'linear-gradient(135deg, #fef3c7, #f8f9fa)', border: '#f97316', text: '#92400e' },
+                'suspension': { bg: 'linear-gradient(135deg, #fee2e2, #f8f9fa)', border: '#ef4444', text: '#991b1b' }
+            };
+            
+            const colors = tierColorMap[riskTier.tier] || tierColorMap.alert;
+            dom.predictionCard.style.background = colors.bg;
+            dom.predictionCard.style.border = `4px solid ${colors.border}`;
+            
+            let actionsHtml = '';
+            if (riskTier.actions && riskTier.actions.length > 0) {
+                actionsHtml = `
+                    <div class="risk-tier-actions">
+                        <h4 style="font-size: 0.9rem; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 1px; margin: 1.5rem 0 1rem 0;">
+                            ${riskTier.tier === 'suspension' ? '🚨 Immediate Actions' : '📋 Recommended Actions'}
+                        </h4>
+                        <ul style="list-style: none; padding: 0; margin: 0; text-align: left; max-width: 500px; margin: 0 auto;">
+                            ${riskTier.actions.slice(0, 5).map(action => `
+                                <li style="padding: 0.5rem 0 0.5rem 1.75rem; position: relative; color: #333; font-size: 0.95rem; line-height: 1.5;">
+                                    <span style="position: absolute; left: 0; font-weight: bold; color: ${colors.border};">✓</span>
+                                    ${action}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            
+            let weatherContextHtml = '';
+            if (weatherContext) {
+                weatherContextHtml = `
+                    <div class="weather-context-display" style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid rgba(0,0,0,0.1);">
+                        ${weatherContext.weather_desc ? `
+                            <div style="text-align: center;">
+                                <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Weather</div>
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #111;">${weatherContext.weather_desc}</div>
+                            </div>
+                        ` : ''}
+                        ${weatherContext.precipitation ? `
+                            <div style="text-align: center;">
+                                <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Forecast</div>
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #111;">${weatherContext.precipitation}</div>
+                            </div>
+                        ` : ''}
+                        ${weatherContext.pagasa_advisory ? `
+                            <div style="text-align: center;">
+                                <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">PAGASA</div>
+                                <div style="font-size: 0.95rem; font-weight: 700; color: #111;">${weatherContext.pagasa_advisory.replace('PAGASA: ', '')}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            
+            let monitoringHtml = '';
+            if (riskTier.monitoring_interval) {
+                const monitoringColors = {
+                    'normal': { bg: '#d1fae5', text: '#065f46' },
+                    'alert': { bg: '#fef3c7', text: '#92400e' },
+                    'suspension': { bg: '#fee2e2', text: '#991b1b' }
+                };
+                const monColor = monitoringColors[riskTier.tier];
+                const monIcon = riskTier.tier === 'suspension' ? '🚨' : riskTier.tier === 'alert' ? '⏰' : '📅';
+                monitoringHtml = `
+                    <div style="text-align: center; padding: 0.75rem; background: ${monColor.bg}; border-radius: 8px; margin-top: 1.5rem; font-size: 0.9rem; font-weight: 600; color: ${monColor.text};">
+                        ${monIcon} ${riskTier.monitoring_interval}
+                    </div>
+                `;
+            }
+            
+            dom.predictionCard.innerHTML = `
+                <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div style="font-size: 3.5rem;">${riskTier.emoji}</div>
+                    <div style="text-align: left;">
+                        <h2 style="margin: 0; font-size: 1.8rem; font-weight: 900; color: #333; letter-spacing: 1px;">${riskTier.title}</h2>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 1rem; color: #666;">${riskTier.subtitle}</p>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255,255,255,0.6); padding: 1rem 1.5rem; border-radius: 12px; margin: 1rem 0;">
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 0.85rem; font-weight: 700; color: #666;">${riskTier.status_icon} Recommendation</h3>
+                    <p style="margin: 0; font-size: 1.3rem; font-weight: 700; color: #111;">${riskTier.recommendation}</p>
+                </div>
+                
+                ${actionsHtml}
+                ${weatherContextHtml}
+                ${monitoringHtml}
+                
+                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.1); font-size: 0.85rem; color: #666; font-style: italic;">
+                    Model confidence: ${(probability * 100).toFixed(0)}% • Data-driven guidance for DepEd officials
+                </div>
+            `;
         }
 
         function renderWeatherMetrics(dataArray) {

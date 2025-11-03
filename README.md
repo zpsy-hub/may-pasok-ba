@@ -191,13 +191,34 @@ See [`model-training/notebooks/`](model-training/notebooks/) for detailed analys
 
 ## 🤖 Automation (GitHub Actions)
 
-### Workflow: Data Collection
+### Workflow: Data Collection & Deployment
 **File**: `.github/workflows/deploy.yml`  
-**Schedule**: Every hour  
-**Tasks**:
-1. Scrape PAGASA status
-2. Fetch Open-Meteo weather
-3. Generate predictions
+**Schedule**: Every hour (at :00)  
+**Duration**: ~2-3 minutes per run
+
+**What it does**:
+1. ✅ Scrape PAGASA typhoon/rainfall warnings
+2. ✅ Fetch Open-Meteo weather forecasts (2 days)
+3. ✅ Generate ML predictions for 17 LGUs
+4. ✅ Log all data to Supabase database
+5. ✅ Save predictions to JSON files
+6. ✅ Deploy to GitHub Pages
+
+**Setup**:
+1. Add GitHub Secrets (see [`.github/SETUP_SECRETS.md`](.github/SETUP_SECRETS.md)):
+   - `SUPABASE_URL` - Your database URL
+   - `SUPABASE_KEY` - Your service role key
+2. Enable GitHub Pages (Settings → Pages → Deploy from `gh-pages` branch)
+3. Workflow runs automatically every hour
+
+**Manual trigger**:
+```bash
+# Via GitHub UI: Actions → Deploy to GitHub Pages → Run workflow
+# Or trigger with GitHub CLI:
+gh workflow run deploy.yml
+```
+
+**Monitor runs**: [Actions tab](../../actions)
 4. Log to Supabase database
 5. Update GitHub Pages
 

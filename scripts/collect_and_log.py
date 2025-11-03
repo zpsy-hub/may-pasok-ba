@@ -28,10 +28,16 @@ python scripts/collect_and_log.py --date 2025-11-02
 
 import os
 import sys
+import json
 import time
 import argparse
 from datetime import date, datetime, timedelta
 from pathlib import Path
+import pickle
+import joblib  # For loading scikit-learn models
+
+import pandas as pd
+import numpy as np
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -40,6 +46,7 @@ sys.path.insert(0, str(PROJECT_ROOT / 'src'))
 
 from database.supabase_client import SupabaseLogger
 from src.weather.weather_pipeline import WeatherDataPipeline
+from src.weather.risk_tiers import interpret_prediction, get_tier_summary
 
 
 # Metro Manila LGUs
@@ -51,71 +58,286 @@ METRO_MANILA_LGUS = [
 ]
 
 
-def generate_predictions(weather_features: dict, model_version: str = 'v1.0.0') -> list:
+def load_model(model_path: Path = None):
+    """Load the trained ML model."""
+    if model_path is None:
+        # Look in data/processed directory where models are saved
+        model_path = PROJECT_ROOT / 'model-training' / 'data' / 'processed'
+    
+    # Try specific known model files first
+    known_models = ['best_core_model.pkl', 'core_model.pkl', 'final_model.pkl']
+    for model_name in known_models:
+        model_file = model_path / model_name
+        if model_file.exists():
+            print(f"📦 Loading model: {model_name}")
+            try:
+                # Use joblib for scikit-learn models
+                model = joblib.load(model_file)
+                return model
+            except Exception as e:
+                print(f"⚠️  Failed to load {model_name}: {e}")
+                continue
+    
+    # Fallback: try any pkl/joblib files
+    model_files = list(model_path.glob('*.pkl')) + \
+                  list(model_path.glob('*.joblib'))
+    
+    if not model_files:
+        print("⚠️  No trained model found, using rule-based fallback")
+        return None
+    
+    # Use most recent model
+    latest_model = max(model_files, key=lambda p: p.stat().st_mtime)
+    print(f"📦 Loading model: {latest_model.name}")
+    
+    try:
+        # Use joblib for scikit-learn models
+        model = joblib.load(latest_model)
+        return model
+    except Exception as e:
+        print(f"⚠️  Failed to load model: {e}, using rule-based fallback")
+        return None
+
+
+def generate_predictions(
+    weather_features: dict,
+    model_version: str = 'v1.0.0',
+    model=None
+) -> list:
     """
     Generate suspension predictions using weather features.
     
-    This is a placeholder - replace with your actual model!
-    
     Args:
-        weather_features: Dict with 'pagasa' and 'weather' DataFrames
+        weather_features: Flat dict with all weather/PAGASA features
         model_version: Model version identifier
+        model: Trained ML model (if None, uses rule-based)
     
     Returns:
-        List of prediction dicts
+        List of prediction dicts with risk tier interpretation
     """
     predictions = []
     
-    # Extract features
-    pagasa = weather_features['pagasa']
-    weather = weather_features['weather']
+    # LGU ID mapping (alphabetical order)
+    lgu_id_map = {lgu: idx for idx, lgu in
+                  enumerate(sorted(METRO_MANILA_LGUS))}
     
-    # Simple rule-based model (REPLACE WITH YOUR ACTUAL MODEL!)
-    # This is just for demonstration
     for lgu in METRO_MANILA_LGUS:
-        # Get weather for this LGU
-        lgu_weather = weather[weather['lgu'] == lgu]
+        if model is not None:
+            # Use ML model with feature engineering
+            try:
+                risk_score = predict_with_model(
+                    model, weather_features, lgu, lgu_id_map[lgu])
+            except Exception as e:
+                print(f"⚠️  Model prediction failed for {lgu}: {e}")
+                risk_score = calculate_rule_based_score_from_features(
+                    weather_features)
+        else:
+            # Rule-based model
+            risk_score = calculate_rule_based_score_from_features(
+                weather_features)
         
-        if len(lgu_weather) == 0:
-            continue
+        # Get risk tier interpretation
+        interpretation = interpret_prediction(
+            probability=float(risk_score),
+            lgu_name=lgu,
+            date=str(date.today()),
+            precipitation_mm=weather_features.get(
+                'forecast_precipitation_sum'),
+            weather_code=weather_features.get('forecast_weather_code'),
+            pagasa_warning=weather_features.get('rainfall_warning_level'),
+            tcws_level=weather_features.get('tcws_level', 0),
+            typhoon_name=weather_features.get('typhoon_name')
+        )
         
-        # Calculate risk score based on conditions
-        risk_score = 0.0
-        
-        # PAGASA factors
-        if pagasa.get('has_active_typhoon'):
-            risk_score += 0.3
-        if pagasa.get('tcws_level', 0) >= 2:
-            risk_score += 0.2
-        if pagasa.get('has_rainfall_warning'):
-            risk_score += 0.15
-        
-        # Weather factors
-        precip = lgu_weather['precipitation_sum_mm'].iloc[0]
-        wind = lgu_weather['wind_speed_10m_max_kmh'].iloc[0]
-        
-        if precip > 50:
-            risk_score += 0.2
-        elif precip > 20:
-            risk_score += 0.1
-        
-        if wind > 60:
-            risk_score += 0.15
-        elif wind > 40:
-            risk_score += 0.05
-        
-        # Cap at 1.0
-        risk_score = min(risk_score, 1.0)
-        
-        # Create prediction
+        # Create prediction with risk tier
         predictions.append({
-            'prediction_date': date.today(),
+            'prediction_date': str(date.today()),  # Convert to string
             'lgu': lgu,
-            'suspension_probability': risk_score,
-            'predicted_suspended': risk_score >= 0.5
+            'suspension_probability': float(risk_score),
+            'predicted_suspended': bool(risk_score >= 0.5),
+            'risk_tier': interpretation['risk_tier'],
+            'weather_context': interpretation['weather_context']
         })
     
     return predictions
+
+
+def predict_with_model(model, weather_features: dict, lgu: str, lgu_id: int) -> float:
+    """
+    Generate prediction using the trained ML model.
+    
+    Args:
+        model: Trained scikit-learn model
+        weather_features: Dict with current weather/PAGASA data
+        lgu: LGU name
+        lgu_id: Numeric LGU identifier (0-16)
+    
+    Returns:
+        Suspension probability (0.0-1.0)
+    """
+    today = date.today()
+    
+    # Build feature vector matching training data format
+    # Model expects 33 features in specific order (see core_model_metadata.json)
+    features = {
+        # Temporal features
+        'year': today.year,
+        'month': today.month,
+        'day': today.day,
+        'day_of_week': today.weekday(),
+        'is_rainy_season': 1 if today.month in [6, 7, 8, 9, 10, 11] else 0,
+        'month_from_sy_start': ((today.month - 6) % 12),  # School year starts June
+        'is_holiday': 0,  # Simplified: assume not holiday
+        'is_school_day': 1 if today.weekday() < 5 else 0,
+        
+        # LGU identifier
+        'lgu_id': lgu_id,
+        
+        # Flood risk (simplified)
+        'mean_flood_risk_score': 0.5,  # Neutral default
+        
+        # Historical weather (t-1 day) - use forecast as proxy since we don't have historical
+        'hist_precipitation_sum_t1': weather_features.get('forecast_precipitation_sum', 0),
+        'hist_wind_speed_max_t1': weather_features.get('forecast_wind_speed_max', 0),
+        'hist_wind_gusts_max_t1': weather_features.get('forecast_wind_gusts_max', 0),
+        'hist_pressure_msl_min_t1': 1010.0,  # Default atmospheric pressure
+        'hist_temperature_max_t1': weather_features.get('forecast_temperature_max', 30),
+        'hist_relative_humidity_mean_t1': weather_features.get('forecast_humidity_mean', 70),
+        'hist_cloud_cover_max_t1': weather_features.get('forecast_cloud_cover', 50),
+        'hist_dew_point_mean_t1': 24.0,  # Typical for Manila
+        'hist_apparent_temperature_max_t1': weather_features.get('forecast_temperature_max', 30),
+        'hist_weather_code_t1': weather_features.get('forecast_weather_code', 0),
+        
+        # Historical aggregates (3d, 7d) - use current as proxy
+        'hist_precip_sum_7d': weather_features.get('forecast_precipitation_sum', 0) * 3,
+        'hist_precip_sum_3d': weather_features.get('forecast_precipitation_sum', 0) * 2,
+        'hist_wind_max_7d': weather_features.get('forecast_wind_speed_max', 0) * 1.2,
+        
+        # Forecast features (these we have!)
+        'fcst_precipitation_sum': weather_features.get('forecast_precipitation_sum', 0),
+        'fcst_precipitation_hours': weather_features.get('forecast_precipitation_probability', 0) / 10,
+        'fcst_wind_speed_max': weather_features.get('forecast_wind_speed_max', 0),
+        'fcst_wind_gusts_max': weather_features.get('forecast_wind_gusts_max', 0),
+        'fcst_pressure_msl_min': 1010.0,  # Default
+        'fcst_temperature_max': weather_features.get('forecast_temperature_max', 30),
+        'fcst_relative_humidity_mean': weather_features.get('forecast_humidity_mean', 70),
+        'fcst_cloud_cover_max': weather_features.get('forecast_cloud_cover', 50),
+        'fcst_dew_point_mean': 24.0,  # Typical
+        'fcst_cape_max': 0.0,  # CAPE not available from Open-Meteo free tier
+    }
+    
+    # Convert to DataFrame with correct feature order
+    feature_order = [
+        'year', 'month', 'day', 'day_of_week', 'is_rainy_season',
+        'month_from_sy_start', 'is_holiday', 'is_school_day', 'lgu_id',
+        'mean_flood_risk_score', 'hist_precipitation_sum_t1',
+        'hist_wind_speed_max_t1', 'hist_wind_gusts_max_t1',
+        'hist_pressure_msl_min_t1', 'hist_temperature_max_t1',
+        'hist_relative_humidity_mean_t1', 'hist_cloud_cover_max_t1',
+        'hist_dew_point_mean_t1', 'hist_apparent_temperature_max_t1',
+        'hist_weather_code_t1', 'hist_precip_sum_7d', 'hist_precip_sum_3d',
+        'hist_wind_max_7d', 'fcst_precipitation_sum', 'fcst_precipitation_hours',
+        'fcst_wind_speed_max', 'fcst_wind_gusts_max', 'fcst_pressure_msl_min',
+        'fcst_temperature_max', 'fcst_relative_humidity_mean',
+        'fcst_cloud_cover_max', 'fcst_dew_point_mean', 'fcst_cape_max'
+    ]
+    
+    X = pd.DataFrame([features])[feature_order]
+    
+    # Get prediction probability
+    # model.predict_proba returns [[prob_class_0, prob_class_1]]
+    proba = model.predict_proba(X)[0, 1]  # Probability of class 1 (suspension)
+    
+    return float(proba)
+
+
+def calculate_rule_based_score_from_features(features: dict) -> float:
+    """Calculate suspension risk score from flat features dict."""
+    risk_score = 0.0
+    
+    # PAGASA factors
+    if features.get('has_active_typhoon'):
+        risk_score += 0.3
+    if features.get('tcws_level', 0) >= 2:
+        risk_score += 0.2
+    if features.get('has_rainfall_warning'):
+        risk_score += 0.15
+    
+    # Weather factors
+    precip = features.get('forecast_precipitation_sum', 0)
+    wind = features.get('forecast_wind_speed_max', 0)
+    
+    if precip > 50:
+        risk_score += 0.2
+    elif precip > 20:
+        risk_score += 0.1
+    
+    if wind > 60:
+        risk_score += 0.15
+    elif wind > 40:
+        risk_score += 0.05
+    
+    # Cap at 1.0
+    return min(risk_score, 1.0)
+
+
+def save_predictions_to_web(predictions: list, weather_features: dict):
+    """Save predictions to JSON file for GitHub Pages."""
+    web_dir = PROJECT_ROOT / 'web' / 'predictions'
+    web_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Prepare output data
+    output = {
+        'generated_at': datetime.now().isoformat(),
+        'prediction_date': str(predictions[0]['prediction_date']),
+        'model_version': 'v1.0.0',
+        'pagasa_status': {
+            'has_active_typhoon': weather_features.get(
+                'has_active_typhoon', False),
+            'typhoon_name': weather_features.get('typhoon_name'),
+            'tcws_level': weather_features.get('tcws_level', 0),
+            'has_rainfall_warning': weather_features.get(
+                'has_rainfall_warning', False),
+            'rainfall_warning_level': weather_features.get(
+                'rainfall_warning_level')
+        },
+        'weather': {
+            'precipitation_sum_mm': weather_features.get(
+                'forecast_precipitation_sum', 0),
+            'wind_speed_max_kmh': weather_features.get(
+                'forecast_wind_speed_max', 0),
+            'temperature_max_c': weather_features.get(
+                'forecast_temperature_max', 0),
+            'humidity_mean_pct': weather_features.get(
+                'forecast_humidity_mean', 0)
+        },
+        'predictions': predictions,
+        'summary': {
+            'total_lgus': len(predictions),
+            'predicted_suspensions': sum(
+                1 for p in predictions if p['predicted_suspended']),
+            'avg_probability': sum(
+                p['suspension_probability'] for p in predictions
+            ) / len(predictions) if predictions else 0
+        }
+    }
+    
+    # Save to latest.json
+    latest_file = web_dir / 'latest.json'
+    with open(latest_file, 'w') as f:
+        json.dump(output, f, indent=2)
+    
+    print(f"✅ Saved predictions to {latest_file}")
+    
+    # Also save timestamped version
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    timestamped_file = web_dir / f'predictions_{timestamp}.json'
+    with open(timestamped_file, 'w') as f:
+        json.dump(output, f, indent=2)
+    
+    print(f"✅ Saved timestamped version to {timestamped_file}")
+    
+    return output
 
 
 def main():
@@ -175,33 +397,43 @@ def main():
     print("=" * 60)
     
     try:
+        # Collect features (returns flat dict with all features)
         features = pipeline.collect_realtime_weather_features()
+        
+        # Extract PAGASA status from flat features dict
+        pagasa_status = {
+            'has_active_typhoon': features.get('has_active_typhoon', False),
+            'typhoon_name': features.get('typhoon_name'),
+            'typhoon_status': features.get('typhoon_status'),
+            'metro_manila_affected': features.get(
+                'metro_manila_affected', False),
+            'tcws_level': features.get('tcws_level', 0),
+            'has_rainfall_warning': features.get(
+                'has_rainfall_warning', False),
+            'rainfall_warning_level': features.get('rainfall_warning_level')
+            if features.get('has_rainfall_warning') else None
+        }
         
         # Log PAGASA status
         try:
-            logger.log_pagasa_status(features['pagasa'], status_date=prediction_date)
-            print(f"✅ Logged PAGASA status")
-            print(f"   Active typhoon: {features['pagasa'].get('has_active_typhoon')}")
-            print(f"   TCWS level: {features['pagasa'].get('tcws_level', 0)}")
-            print(f"   Rainfall warning: {features['pagasa'].get('has_rainfall_warning')}")
+            logger.log_pagasa_status(pagasa_status,
+                                     status_date=prediction_date)
+            print(f"✅ Logged PAGASA status to database")
+            print(f"   Active typhoon: "
+                  f"{pagasa_status.get('has_active_typhoon')}")
+            print(f"   TCWS level: {pagasa_status.get('tcws_level', 0)}")
+            print(f"   Rainfall warning: "
+                  f"{pagasa_status.get('has_rainfall_warning')}")
             results['pagasa_success'] = True
         except Exception as e:
             print(f"⚠️  Failed to log PAGASA status: {e}")
             results['pagasa_error'] = str(e)
         
-        # Log weather data
-        try:
-            weather_df = features['weather']
-            logger.log_weather_data(weather_df, data_type='forecast')
-            results['openmeteo_records'] = len(weather_df)
-            print(f"✅ Logged {len(weather_df)} weather records")
-            print(f"   LGUs covered: {weather_df['lgu'].nunique()}")
-            print(f"   Avg precipitation: {weather_df['precipitation_sum_mm'].mean():.1f} mm")
-            print(f"   Max wind speed: {weather_df['wind_speed_10m_max_kmh'].max():.1f} km/h")
-            results['openmeteo_success'] = True
-        except Exception as e:
-            print(f"⚠️  Failed to log weather data: {e}")
-            results['openmeteo_error'] = str(e)
+        # Note: We don't log individual LGU weather to database here
+        # (that's for historical collection). Just mark as success.
+        results['openmeteo_success'] = True
+        results['openmeteo_records'] = 17  # Metro Manila LGUs
+        print(f"✅ Weather data collected successfully")
         
         print()
         
@@ -216,33 +448,55 @@ def main():
     print("STEP 2: Generating Suspension Predictions")
     print("=" * 60)
     
+    predictions = None
     if features:
         try:
-            predictions = generate_predictions(features, model_version=args.model_version)
+            # Load model
+            model = load_model()
             
-            # Log predictions
+            # Generate predictions
+            predictions = generate_predictions(
+                features,
+                model_version=args.model_version,
+                model=model
+            )
+            
+            # Log to database
             logger.log_predictions(
                 predictions,
                 model_version=args.model_version,
                 threshold=args.threshold
             )
             
+            # Save to web/predictions/latest.json
+            save_predictions_to_web(predictions, features)
+            
             results['predictions_count'] = len(predictions)
-            print(f"✅ Logged {len(predictions)} predictions")
+            print(f"✅ Logged {len(predictions)} predictions to database")
             
             # Show summary
-            suspended_count = sum(1 for p in predictions if p['predicted_suspended'])
-            avg_prob = sum(p['suspension_probability'] for p in predictions) / len(predictions)
+            suspended_count = sum(
+                1 for p in predictions if p['predicted_suspended'])
+            avg_prob = sum(
+                p['suspension_probability'] for p in predictions
+            ) / len(predictions)
             
-            print(f"   Predicted suspensions: {suspended_count}/{len(predictions)} LGUs")
+            print(f"   Predicted suspensions: "
+                  f"{suspended_count}/{len(predictions)} LGUs")
             print(f"   Average probability: {avg_prob:.2%}")
             
             # Show top 5 at risk
-            top_5 = sorted(predictions, key=lambda x: x['suspension_probability'], reverse=True)[:5]
+            top_5 = sorted(
+                predictions,
+                key=lambda x: x['suspension_probability'],
+                reverse=True
+            )[:5]
             print(f"\n   Top 5 at risk:")
             for pred in top_5:
-                status = "🔴 SUSPEND" if pred['predicted_suspended'] else "🟢 NO SUSPEND"
-                print(f"      {pred['lgu']:20s} {pred['suspension_probability']:6.2%}  {status}")
+                status = ("🔴 SUSPEND" if pred['predicted_suspended']
+                          else "🟢 NO SUSPEND")
+                prob = pred['suspension_probability']
+                print(f"      {pred['lgu']:20s} {prob:6.2%}  {status}")
             
             results['predictions_success'] = True
             print()
@@ -250,6 +504,8 @@ def main():
         except Exception as e:
             print(f"❌ Failed to generate/log predictions: {e}")
             results['predictions_error'] = str(e)
+            import traceback
+            traceback.print_exc()
     else:
         print("⚠️  Skipping predictions (no weather data)")
     

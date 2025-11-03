@@ -1,7 +1,7 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Run every hour to check for typhoon updates
+  # Run every hour to collect data and generate predictions
   schedule:
     - cron: '0 * * * *'
   
@@ -14,57 +14,77 @@ on:
       - main
 
 jobs:
-  fetch-and-deploy:
+  collect-predict-deploy:
     runs-on: ubuntu-latest
+    
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
     
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
       
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
       
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+      - name: Install Python dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install supabase joblib scikit-learn
       
       - name: Install Node.js dependencies
         run: |
           cd nodejs-pagasa
           npm install
       
-      - name: Install Python dependencies
+      - name: Run data collection and prediction pipeline
+        id: pipeline
         run: |
-          pip install -r requirements.txt
-      
-      - name: Fetch PAGASA typhoon status
-        id: pagasa
-        run: |
-          cd nodejs-pagasa
-          node pagasa_parser.js
-          cd ..
+          echo "🚀 Starting data collection pipeline..."
+          python scripts/collect_and_log.py \
+            --model-version "v1.0.0" \
+            --threshold 0.5 \
+            --github-run-id "${{ github.run_id }}"
           
-          # Check if pagasa_status.json was created
-          if [ -f "pagasa_status.json" ]; then
-            echo "✅ PAGASA status fetched successfully"
-            cat pagasa_status.json
-            
-            # Copy to web directory for deployment
-            cp pagasa_status.json web/predictions/pagasa_status.json
+          echo "pipeline_status=success" >> $GITHUB_OUTPUT
+        continue-on-error: false
+      
+      - name: Verify predictions were generated
+        run: |
+          if [ -f "web/predictions/latest.json" ]; then
+            echo "✅ Predictions generated successfully"
+            echo "📊 Preview:"
+            cat web/predictions/latest.json | jq '.summary'
           else
-            echo "⚠️ PAGASA status file not created, using fallback"
-            echo '{"hasActiveTyphoon":false,"message":"Data unavailable"}' > web/predictions/pagasa_status.json
+            echo "❌ Predictions file not found!"
+            exit 1
           fi
       
-      - name: Run predictions (if applicable)
-        continue-on-error: true
+      - name: Commit updated predictions
         run: |
-          # Run your model predictions here if needed
-          # python model-training/train.py --predict
-          echo "Prediction step placeholder"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Add prediction files
+          git add web/predictions/*.json
+          git add weather_data/*.json
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update predictions - $(date -u +'%Y-%m-%d %H:%M UTC') [Run #${{ github.run_id }}]"
+            git push
+          fi
       
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -72,13 +92,35 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./web
           publish_branch: gh-pages
-          keep_files: true
+          keep_files: false
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Update predictions and PAGASA status'
+          commit_message: 'Deploy predictions - ${{ github.run_id }}'
       
-      - name: Summary
+      - name: Deployment Summary
+        if: always()
         run: |
-          echo "🎉 Deployment complete!"
-          echo "📊 PAGASA status: $(cat web/predictions/pagasa_status.json | jq -r .message)"
-          echo "🌐 Site URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
+          echo "## 🎉 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Run ID:** ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "web/predictions/latest.json" ]; then
+            echo "### 📊 Prediction Summary" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat web/predictions/latest.json | jq '.summary' >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            # Extract key metrics
+            SUSPENDED=$(cat web/predictions/latest.json | jq '.summary.predicted_suspensions')
+            TOTAL=$(cat web/predictions/latest.json | jq '.summary.total_lgus')
+            AVG_PROB=$(cat web/predictions/latest.json | jq '.summary.avg_probability')
+            
+            echo "**Predicted Suspensions:** $SUSPENDED / $TOTAL LGUs" >> $GITHUB_STEP_SUMMARY
+            echo "**Average Risk:** $(echo "$AVG_PROB * 100" | bc -l | xargs printf "%.1f")%" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🌐 **Live Site:** https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" >> $GITHUB_STEP_SUMMARY
