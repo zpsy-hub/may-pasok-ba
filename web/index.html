@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -211,6 +211,13 @@
             <button class="btn-refresh" id="refreshBtn" aria-label="Refresh Data"><i data-lucide="refresh-cw"></i></button>
         </div>
 
+        <!-- Selected LGU Heading -->
+        <div id="selectedLguHeading" style="text-align: center; margin: 1.5rem 0; display: none;">
+            <h2 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 0;">
+                <span id="selectedLguName"></span>
+            </h2>
+        </div>
+
         <!-- Main Content Area -->
         <main id="appContent">
             <div id="loading" class="loading-spinner">
@@ -222,24 +229,15 @@
                 <!-- DYNAMIC GREETING WILL BE INSERTED HERE -->
                 <div id="dynamicGreeting" class="greeting-header"></div>
 
+                <!-- Typhoon and Rainfall Alerts (now integrated into prediction card) -->
+                <!-- <div id="typhoonAlert" class="section-container" style="display: none; margin-bottom: 1rem;"></div>
+                <div id="rainfallAlert" class="section-container" style="display: none; margin-bottom: 1rem;"></div> -->
+
+                <!-- Prediction Card -->
                 <div id="predictionCard" class="prediction-card"></div>
-                <div id="typhoonAlert" class="section-container" style="display: none;"></div>
-                <div id="rainfallAlert" class="section-container" style="display: none;"></div>
-                <div id="recommendationReasonsContainer" class="section-container" style="display: none; margin-bottom:0;">
-                    <h6 class="section-title">Key Decision Factors</h6>
-                    <div class="recommendation-reasons-card" id="reasonsList"></div>
-                </div>
-                <!-- Tomorrow's Weather Summary removed -->
-                <!-- <div id="weatherMetricsSection" class="section-container" style="display: none;">
-                    <h6 class="section-title">Tomorrow's Weather Summary</h6>
-                    <div class="weather-grid" id="weatherMetricsGrid"></div>
-                </div> -->
-                <!-- 24-Hour Forecast removed for now -->
-                <!-- <div id="hourlyForecastSection" class="section-container" style="display: none;">
-                    <h6 class="section-title">24-Hour Forecast</h6>
-                    <div id="hourlyListView"></div>
-                </div> -->
-                <div id="keyHoursSection" class="section-container" style="display: none; margin-top: 3rem;">
+                
+                <!-- Key Hours and Rain Chart (shown for individual LGUs) -->
+                <div id="keyHoursSection" class="section-container" style="display: none; margin-top: 2rem;">
                     <h6 class="section-title">Key Hours: Quick Risk Assessment</h6>
                     <div class="key-hours" id="keyHoursGrid"></div>
                 </div>
@@ -254,6 +252,20 @@
                     </div>
                     <div class="rain-tooltip" id="rainTooltip"></div>
                 </div>
+
+                <!-- Recommendation Reasons -->
+                <div id="recommendationReasonsContainer" class="section-container" style="display: none; margin-bottom:0;">
+                    <h6 class="section-title">Key Decision Factors</h6>
+                    <div class="recommendation-reasons-card" id="reasonsList"></div>
+                </div>
+                
+                <!-- Tomorrow's Weather Summary (Key Metrics) -->
+                <div id="weatherMetricsSection" class="section-container" style="display: none;">
+                    <h6 class="section-title">Tomorrow's Weather Summary</h6>
+                    <div class="weather-grid" id="weatherMetricsGrid"></div>
+                </div>
+                
+                <!-- About and Acknowledgements -->
                 <div class="section-container">
                     <div class="acknowledgements-card">
                         <h3>About This Project</h3>
@@ -272,7 +284,7 @@
     </div>
 
     <!-- Floating Action Buttons -->
-    <a href="learn-more.html" class="floating-btn learn-more-btn"><i data-lucide="book-open"></i> Learn More</a>
+    <a href="prediction-logs.html" class="floating-btn learn-more-btn"><i data-lucide="bar-chart-3"></i> Prediction Logs</a>
     <button class="floating-btn feedback-btn" id="openFeedbackBtn"><i data-lucide="message-square-plus"></i> Send Feedback</button>
 
     <!-- Feedback Modal -->
@@ -369,6 +381,8 @@
             dynamicGreeting: document.getElementById('dynamicGreeting'),
             lguSelect: document.getElementById('lguSelect'),
             refreshBtn: document.getElementById('refreshBtn'),
+            selectedLguHeading: document.getElementById('selectedLguHeading'),
+            selectedLguName: document.getElementById('selectedLguName'),
             predictionCard: document.getElementById('predictionCard'),
             typhoonAlert: document.getElementById('typhoonAlert'),
             rainfallAlert: document.getElementById('rainfallAlert'),
@@ -423,23 +437,23 @@
             dom.refreshBtn.classList.add('spinning');
 
             try {
-                // Try fetching from latest.json first (primary source)
+                // Fetch from latest.json (updated by GitHub Actions every 30 minutes)
                 console.log('📡 Fetching predictions from latest.json...');
-                const response = await fetch(`../predictions/latest.json?t=${new Date().getTime()}`);
+                const response = await fetch(`predictions/latest.json?t=${new Date().getTime()}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 
                 const newData = await response.json();
-                const dataTimestamp = new Date(newData.metadata.timestamp);
+                const dataTimestamp = new Date(newData.generated_at || newData.metadata?.timestamp);
                 const dataAge = (Date.now() - dataTimestamp.getTime()) / (1000 * 60); // minutes
                 
-                console.log(`✅ Loaded predictions from latest.json (${dataAge.toFixed(0)} minutes old)`);
+                console.log(`✅ Loaded predictions (${dataAge.toFixed(0)} minutes old)`);
                 
-                // Check if data is stale (older than 4 hours)
-                if (dataAge > 240) {
-                    console.warn(`⚠️  Data is ${(dataAge/60).toFixed(1)} hours old - may be stale`);
+                // Show warning if data is stale (older than 2 hours)
+                if (dataAge > 120) {
+                    console.warn(`⚠️  Data is ${(dataAge/60).toFixed(1)} hours old`);
                 }
 
                 if (JSON.stringify(newData) !== JSON.stringify(appState.predictionData)) {
@@ -448,23 +462,10 @@
                     render();
                 }
             } catch (error) {
-                console.error('❌ Failed to fetch from latest.json:', error);
-                
-                // TODO: Add database API fallback here when backend is ready
-                // Example:
-                // try {
-                //     console.log('🔄 Trying database API fallback...');
-                //     const dbResponse = await fetch('https://your-api.com/api/predictions/latest');
-                //     const dbData = await dbResponse.json();
-                //     appState.predictionData = dbData;
-                //     render();
-                //     return;
-                // } catch (dbError) {
-                //     console.error('❌ Database API also failed:', dbError);
-                // }
+                console.error('❌ Failed to fetch predictions:', error);
                 
                 if (!isBackgroundRefresh) {
-                    showError('Unable to load predictions. The prediction data file may be temporarily unavailable. Please try again later.');
+                    showError('Unable to load predictions. Please check your internet connection and try again.');
                 }
             } finally {
                 if (!isBackgroundRefresh) {
@@ -501,17 +502,24 @@
             renderGreeting();
             // LGU selector
             renderLGUDropdown();
+            // Update LGU heading
+            updateLGUHeading();
 
             // Render the main content (prediction card / details)
             if (appState.selectedLGU === 'metro_manila') renderMetroManilaSummary();
             else renderLGUDetails(appState.selectedLGU);
 
-            renderTyphoonAlert();
-            renderRainfallAlert();
+            // Alerts now integrated into prediction card
+            // renderTyphoonAlert();
+            // renderRainfallAlert();
             lucide.createIcons();
         }
 
         // --- 5. UI RENDERING SUB-FUNCTIONS ---
+        function updateLGUHeading() {
+            // City name now shown inside the card, so always hide the separate heading
+            dom.selectedLguHeading.style.display = 'none';
+        }
         function renderGreeting() {
             const now = new Date();
             const hour = now.getHours();
@@ -555,14 +563,37 @@
         function renderLGUDropdown() {
             const currentVal = dom.lguSelect.value;
             dom.lguSelect.innerHTML = '<option value="metro_manila">Metro Manila Overview</option>';
+            
+            // Helper function to normalize tier names
+            function normalizeTier(prediction) {
+                const tier = prediction.risk_tier?.tier || prediction.tier;
+                if (tier === 'suspension') return 'RED';
+                if (tier === 'alert') return 'ORANGE';
+                if (tier === 'normal') return 'GREEN';
+                return tier?.toUpperCase() || 'GREEN';
+            }
+            
             // Some prediction objects may not include a `status` field (legacy). Treat missing status as success.
             const predictions = appState.predictionData.predictions
                 .filter(p => (!('status' in p) || p.status === 'success'))
                 .sort((a, b) => b.suspension_probability - a.suspension_probability);
+            
             predictions.forEach(p => {
                 const option = document.createElement('option');
                 option.value = p.lgu;
-                option.textContent = `${p.lgu} (${(p.suspension_probability * 100).toFixed(0)}%)`;
+                
+                // Get tier and corresponding icon
+                const tier = normalizeTier(p);
+                let tierIcon = '';
+                if (tier === 'RED') {
+                    tierIcon = '🔴'; // Red circle for high risk
+                } else if (tier === 'ORANGE') {
+                    tierIcon = '🟠'; // Orange circle for medium risk
+                } else {
+                    tierIcon = '🟢'; // Green circle for low risk
+                }
+                
+                option.textContent = `${tierIcon} ${p.lgu}`;
                 dom.lguSelect.appendChild(option);
             });
             dom.lguSelect.value = currentVal && dom.lguSelect.querySelector(`option[value="${currentVal}"]`) ? currentVal : appState.selectedLGU;
@@ -572,49 +603,214 @@
             console.log('renderMetroManilaSummary called');
             if (dom.hourlyForecastSection) dom.hourlyForecastSection.style.display = 'none';
             if (dom.reasonsContainer) dom.reasonsContainer.style.display = 'none';
-            const summary = appState.predictionData.metro_manila_summary;
+            
+            // Hide hourly charts for Metro Manila overview
+            const keyHoursSection = document.getElementById('keyHoursSection');
+            const rainChartSection = document.getElementById('rainChartSection');
+            if (keyHoursSection) keyHoursSection.style.display = 'none';
+            if (rainChartSection) rainChartSection.style.display = 'none';
+            
             // Include legacy predictions without `status` as successes
             const predictions = appState.predictionData.predictions.filter(p => (!('status' in p) || p.status === 'success'));
             console.log('Predictions count:', predictions.length);
             if (predictions.length === 0) return;
-            const avgProbability = predictions.reduce((sum, p) => sum + p.suspension_probability, 0) / predictions.length;
             
-            // Check if any prediction has risk tier data (new format)
-            const firstPredictionWithTier = predictions.find(p => p.risk_tier);
-            let metroRiskTier = null;
-            let metroWeatherContext = null;
+            // Implement hybrid Metro Manila logic
+            const metroOverview = getMetroOverviewHybrid(predictions);
             
-            if (firstPredictionWithTier) {
-                // Aggregate risk tier for Metro Manila
-                const tierCounts = { normal: 0, alert: 0, suspension: 0 };
-                predictions.forEach(p => {
-                    if (p.risk_tier && p.risk_tier.tier) {
-                        tierCounts[p.risk_tier.tier]++;
-                    }
-                });
-                
-                // Determine dominant tier
-                const dominantTier = Object.entries(tierCounts).reduce((max, [tier, count]) => 
-                    count > max.count ? { tier, count } : max, 
-                    { tier: 'normal', count: 0 }
-                ).tier;
-                
-                // Use the first prediction's tier as template and adjust
-                metroRiskTier = { ...firstPredictionWithTier.risk_tier };
-                metroRiskTier.tier = dominantTier;
-                metroRiskTier.title = metroRiskTier.title.replace(/\b\d+\b/, predictions.length); // Replace count if present
-                metroWeatherContext = firstPredictionWithTier.weather_context;
-                
-                console.log('Risk tier aggregation:', tierCounts, 'Dominant:', dominantTier);
+            // Render the prediction card with hybrid logic
+            renderMetroManilaPredictionCard(metroOverview);
+            
+            // Don't show weather metrics for Metro Manila overview
+            // renderWeatherMetrics(predictions);
+        }
+
+        function getMetroOverviewHybrid(predictions) {
+            // Helper function to normalize tier names (support both old and new formats)
+            function normalizeTier(prediction) {
+                const tier = prediction.risk_tier?.tier || prediction.tier;
+                // Map old field names to new ones
+                if (tier === 'suspension') return 'RED';
+                if (tier === 'alert') return 'ORANGE';
+                if (tier === 'normal') return 'GREEN';
+                // Return as-is if already normalized
+                return tier?.toUpperCase() || 'GREEN';
             }
             
-            // Use provided summary recommendation if present; otherwise derive from avgProbability
-            const derivedRec = avgProbability >= 0.7 ? 'Suspend' : (avgProbability >= 0.3 ? 'Monitor' : 'Proceed');
-            const recToShow = (summary && summary.overall_recommendation) ? summary.overall_recommendation : derivedRec;
-            console.log('Recommendation:', recToShow, 'Probability:', avgProbability);
+            // Count tiers (support both risk_tier and tier fields, and old/new naming)
+            const tierCounts = {
+                'RED': predictions.filter(p => normalizeTier(p) === 'RED').length,
+                'ORANGE': predictions.filter(p => normalizeTier(p) === 'ORANGE').length,
+                'GREEN': predictions.filter(p => normalizeTier(p) === 'GREEN').length
+            };
             
-            renderPredictionCard(recToShow, avgProbability, metroRiskTier, metroWeatherContext);
-            renderWeatherMetrics(predictions);
+            const total = predictions.length;
+            const significantMinority = 4; // 20% threshold
+            
+            // Get LGU names by tier
+            const redLgus = predictions.filter(p => normalizeTier(p) === 'RED').map(p => p.lgu);
+            const orangeLgus = predictions.filter(p => normalizeTier(p) === 'ORANGE').map(p => p.lgu);
+            const greenLgus = predictions.filter(p => normalizeTier(p) === 'GREEN').map(p => p.lgu);
+            
+            // Determine primary status (highest alert wins)
+            let primaryColor, primaryIcon, title, icon, message, exception;
+            
+            if (tierCounts.RED > 0) {
+                primaryColor = 'RED';
+                primaryIcon = '🔴';
+                
+                if (tierCounts.RED === total) {
+                    // All RED
+                    title = "METRO-WIDE EMERGENCY";
+                    icon = "⛔⛔⛔";
+                    message = `ALL ${total} LGUs UNDER HIGH RISK`;
+                    exception = null;
+                } else if (tierCounts.RED >= 9) {
+                    // Majority RED
+                    title = "WIDESPREAD HIGH RISK";
+                    icon = "⛔";
+                    message = "Severe weather affecting most of NCR";
+                    const safeCount = tierCounts.GREEN + tierCounts.ORANGE;
+                    exception = {
+                        type: 'LESS_AFFECTED',
+                        count: safeCount,
+                        message: `${safeCount} LGUs less affected`
+                    };
+                } else {
+                    // Localized RED
+                    title = "LOCALIZED HIGH RISK";
+                    icon = "⛔";
+                    message = "Severe weather affecting specific areas";
+                    const safeCount = tierCounts.GREEN;
+                    exception = {
+                        type: 'MOSTLY_SAFE',
+                        count: safeCount + tierCounts.ORANGE,
+                        message: `Most LGUs (${safeCount} safe, ${tierCounts.ORANGE} monitoring) remain normal`,
+                        highRiskAreas: getGeographicCluster(redLgus)
+                    };
+                }
+            } else if (tierCounts.ORANGE > 0) {
+                primaryColor = 'ORANGE';
+                primaryIcon = '🟠';
+                
+                if (tierCounts.ORANGE === total) {
+                    // All ORANGE
+                    title = "WIDESPREAD ALERT";
+                    icon = "⚠️";
+                    message = `ALL ${total} LGUs UNDER WEATHER ALERT`;
+                    exception = null;
+                } else if (tierCounts.ORANGE >= 9) {
+                    // Majority ORANGE
+                    title = "WIDESPREAD ALERT";
+                    icon = "⚠️";
+                    message = "Most NCR LGUs under weather alert";
+                    exception = tierCounts.GREEN > 0 ? {
+                        type: 'NORMAL_AREAS',
+                        count: tierCounts.GREEN,
+                        message: `${tierCounts.GREEN} LGUs remain normal`
+                    } : null;
+                } else {
+                    // Mixed ORANGE
+                    title = "REGIONAL ALERT";
+                    icon = "🟠";
+                    message = "Weather affecting parts of NCR";
+                    exception = tierCounts.GREEN > 0 ? {
+                        type: 'MOSTLY_NORMAL',
+                        count: tierCounts.GREEN,
+                        message: `Most LGUs normal (${tierCounts.GREEN} safe)`
+                    } : null;
+                }
+            } else {
+                // All GREEN
+                primaryColor = 'GREEN';
+                primaryIcon = '🟢';
+                title = "NORMAL CONDITIONS";
+                icon = "🟢";
+                message = `All ${total} LGUs report low risk`;
+                exception = null;
+            }
+            
+            return {
+                title,
+                icon,
+                primaryColor,
+                primaryIcon,
+                message,
+                exception,
+                tierCounts,
+                total
+            };
+        }
+
+        function getGeographicCluster(lguList) {
+            const zones = {
+                'Northern': ['Valenzuela', 'Malabon', 'Navotas', 'Caloocan'],
+                'Eastern': ['Marikina', 'Pasig', 'San Juan'],
+                'Southern': ['Parañaque', 'Las Piñas', 'Muntinlupa'],
+                'Central': ['Manila', 'Makati', 'Mandaluyong', 'Quezon City'],
+                'Western': ['Taguig', 'Pateros', 'Pasay']
+            };
+            
+            for (const [zone, lgus] of Object.entries(zones)) {
+                if (lguList.some(lgu => lgus.includes(lgu))) {
+                    return `${zone} Metro Manila`;
+                }
+            }
+            return "Multiple areas";
+        }
+
+        function renderMetroManilaPredictionCard(overview) {
+            const { title, icon, primaryColor, message, exception, tierCounts, total } = overview;
+            
+            const recMap = {
+                'RED': { className: 'suspend', emoji: '🔴' },
+                'ORANGE': { className: 'monitor', emoji: '🟠' },
+                'GREEN': { className: 'classes-expected', emoji: '🟢' }
+            };
+            
+            const rec = recMap[primaryColor];
+            
+            dom.predictionCard.className = `prediction-card bg-${rec.className}`;
+            
+            // Build distribution text
+            const distributionHtml = `
+                <div style="margin: 1.5rem 0; font-size: 0.95rem; color: var(--text-secondary);">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">📍 Risk Distribution:</div>
+                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <span>🔴 High Risk: ${tierCounts.RED} LGUs (${Math.round(tierCounts.RED*100/total)}%)</span>
+                        <span>🟠 Moderate Risk: ${tierCounts.ORANGE} LGUs (${Math.round(tierCounts.ORANGE*100/total)}%)</span>
+                        <span>🟢 Low Risk: ${tierCounts.GREEN} LGUs (${Math.round(tierCounts.GREEN*100/total)}%)</span>
+                    </div>
+                </div>
+            `;
+            
+            // Build exception message if exists
+            let exceptionHtml = '';
+            if (exception) {
+                exceptionHtml = `
+                    <div style="margin-top: 1.5rem; padding: 1rem 1.5rem; background: rgba(0,0,0,0.05); border-radius: 12px; font-size: 0.9rem; line-height: 1.6;">
+                        <div style="font-weight: 600; margin-bottom: 0.25rem;">
+                            ${exception.type === 'ESCALATION' ? '⚠️ ALERT' : 'ℹ️ EXCEPTION'}:
+                        </div>
+                        <div>${exception.message}</div>
+                        ${exception.highRiskAreas ? `<div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">High-risk areas: ${exception.highRiskAreas}</div>` : ''}
+                    </div>
+                `;
+            }
+            
+            dom.predictionCard.innerHTML = `
+                <h2 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin: 0 0 1.5rem 0; text-align: center;">
+                    Metro Manila
+                </h2>
+                <div style="font-size: 3rem; margin-bottom: 1rem;">${icon}</div>
+                <div class="recommendation-badge ${rec.className}">${rec.emoji} ${title}</div>
+                <p class="recommendation-context">${message}</p>
+                ${distributionHtml}
+                ${exceptionHtml}
+                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.03); border-radius: 12px; font-size: 0.9rem; color: var(--text-secondary);">
+                    💡 Select your specific LGU from the dropdown above to see detailed hourly forecast
+                </div>
+            `;
         }
 
         function renderLGUDetails(lguName) {
@@ -625,13 +821,191 @@
             const riskTier = lguData.risk_tier || null;
             const weatherContext = lguData.weather_context || null;
             
-            renderPredictionCard(lguData.recommendation, lguData.suspension_probability, riskTier, weatherContext);
-            // renderWeatherMetrics([lguData]); // Removed - simplified UI
-            renderRecommendationReasons(lguData);
-            // renderHourlyForecast(lguName); // Commented out - using Key Hours and Rain Chart instead
+            renderLGUPredictionCard(lguData, riskTier, weatherContext);
+            // renderWeatherMetrics([lguData]); // Removed - metrics now in card
+            // renderRecommendationReasons(lguData); // Removed - not needed
             
-            // Fetch hourly data and render new charts
+            // Fetch hourly data and render new charts (Key Hours + Rain Chart)
             fetchAndRenderNewCharts(lguName);
+        }
+
+        function renderLGUPredictionCard(lguData, riskTier, weatherContext) {
+            // Helper function to normalize tier names
+            function normalizeTier(tier) {
+                if (tier === 'suspension') return 'RED';
+                if (tier === 'alert') return 'ORANGE';
+                if (tier === 'normal') return 'GREEN';
+                return tier?.toUpperCase() || 'GREEN';
+            }
+            
+            // Determine tier info
+            let tierEmoji, tierTitle, tierClassName, tierActions, weatherDesc, pagasaAdvisory;
+            const normalizedTier = riskTier ? normalizeTier(riskTier.tier) : 
+                (lguData.suspension_probability >= 0.7 ? 'RED' : 
+                 lguData.suspension_probability >= 0.4 ? 'ORANGE' : 'GREEN');
+            
+            // Get weather data
+            const weather = appState.predictionData?.weather || {};
+            const rainfall = weather.precipitation_sum_mm || 0;
+            const windSpeed = weather.wind_speed_max_kmh || 0;
+            const maxTemp = weather.temperature_max_c || 0;
+            const avgHumidity = weather.humidity_mean_pct || 0;
+            
+            // Determine PAGASA advisory based on data
+            const pagasaStatus = appState.predictionData?.pagasa_status;
+            
+            // Build typhoon warning if active
+            let typhoonWarning = '';
+            if (pagasaStatus?.has_active_typhoon || pagasaStatus?.hasActiveTyphoon) {
+                const isDirect = pagasaStatus.metro_manila_affected || pagasaStatus.metroManilaAffected;
+                const typhoonName = pagasaStatus.typhoon_name || pagasaStatus.typhoonName;
+                const tcwsLevel = pagasaStatus.tcws_level || pagasaStatus.tcwsLevel || 0;
+                
+                typhoonWarning = `
+                    <div style="background: ${isDirect ? 'rgba(220, 53, 69, 0.15)' : 'rgba(255, 193, 7, 0.15)'}; border-left: 3px solid ${isDirect ? '#dc3545' : '#ffc107'}; padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 2rem;">
+                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1rem;">🌀 ${isDirect ? 'TYPHOON WARNING' : 'TYPHOON ALERT'}:</div>
+                        <div style="color: #666; font-size: 1rem; line-height: 1.6;">
+                            ${typhoonName ? `<strong>${typhoonName}</strong> is ${isDirect ? `affecting Metro Manila (TCWS #${tcwsLevel})` : 'being monitored in the region'}. Stay alert and monitor PAGASA updates.` : `Active tropical cyclone detected in the region. ${isDirect ? 'Metro Manila may be affected.' : ''} Monitor PAGASA for updates.`}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Build rainfall warning
+            if (pagasaStatus?.has_rainfall_warning && pagasaStatus.rainfall_warning_level === 3) {
+                pagasaAdvisory = '🔴 PAGASA Red Rainfall Warning';
+            } else if (pagasaStatus?.has_rainfall_warning && pagasaStatus.rainfall_warning_level === 2) {
+                pagasaAdvisory = '🟠 PAGASA Orange Rainfall Advisory';
+            } else if (pagasaStatus?.has_rainfall_warning && pagasaStatus.rainfall_warning_level === 1) {
+                pagasaAdvisory = '🟡 PAGASA Yellow Rainfall Advisory';
+            } else {
+                pagasaAdvisory = null;
+            }
+            
+            if (normalizedTier === 'RED') {
+                tierEmoji = '🔴';
+                tierTitle = 'HIGH RISK';
+                tierClassName = 'suspend';
+                weatherDesc = '🌊 Severe Weather Expected';
+                tierActions = [
+                    'Class suspension STRONGLY RECOMMENDED',
+                    'Avoid flood-prone areas',
+                    'Monitor emergency announcements closely'
+                ];
+            } else if (normalizedTier === 'ORANGE') {
+                tierEmoji = '🟠';
+                tierTitle = 'ALERT';
+                tierClassName = 'monitor';
+                weatherDesc = '🌧️ Heavy Rain Expected';
+                tierActions = [
+                    'Check school announcements by 6 PM today',
+                    'Stay updated on weather and flood warnings',
+                    'Have emergency contacts ready'
+                ];
+            } else {
+                tierEmoji = '🟢';
+                tierTitle = 'NORMAL';
+                tierClassName = 'classes-expected';
+                weatherDesc = '☀️ Fair Weather Expected';
+                tierActions = [
+                    'Proceed with normal school operations',
+                    'Continue routine weather monitoring'
+                ];
+            }
+            
+            dom.predictionCard.className = `prediction-card bg-${tierClassName}`;
+            
+            // Get nearby LGUs with their tiers
+            const allPredictions = appState.predictionData.predictions || [];
+            const nearbyLgus = allPredictions
+                .filter(p => p.lgu !== lguData.lgu)
+                .slice(0, 3)
+                .map(p => {
+                    const tier = normalizeTier(p.risk_tier?.tier || p.tier);
+                    const emoji = tier === 'RED' ? '🔴' : tier === 'ORANGE' ? '🟠' : '🟢';
+                    return `${p.lgu} ${emoji}`;
+                })
+                .join(' | ');
+            
+            // Build recommendation icon
+            const recIcon = normalizedTier === 'RED' ? '⛔' : normalizedTier === 'ORANGE' ? '⚠️' : '✓';
+            
+            // Build emergency contacts for RED tier
+            const emergencySection = normalizedTier === 'RED' ? `
+                <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(220, 53, 69, 0.1); border-radius: 8px;">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">🚨 Emergency Contacts:</div>
+                    <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                        NDRRMC: 911 | Local DRRM Office
+                    </div>
+                </div>
+            ` : '';
+            
+            dom.predictionCard.innerHTML = `
+                <h2 style="font-size: 2.25rem; font-weight: 700; color: var(--text-primary); margin: 0 0 1.5rem 0; text-align: center;">
+                    ${lguData.lgu}
+                </h2>
+                ${normalizedTier === 'ORANGE' || normalizedTier === 'RED' ? '<div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">⚠️</div>' : ''}
+                <div class="recommendation-badge ${tierClassName}" style="margin-bottom: 2rem;">${tierEmoji} ${tierTitle}</div>
+                
+                <!-- Typhoon Warning (if active) -->
+                ${typhoonWarning}
+                
+                <!-- Weather Interpretation Box -->
+                <div style="background: ${normalizedTier === 'RED' ? 'rgba(244, 67, 54, 0.1)' : normalizedTier === 'ORANGE' ? 'rgba(255, 152, 0, 0.1)' : 'rgba(76, 175, 80, 0.1)'}; border-left: 3px solid ${normalizedTier === 'RED' ? '#f44336' : normalizedTier === 'ORANGE' ? '#ff9800' : '#4caf50'}; padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 2rem; ${typhoonWarning ? 'margin-top: 0;' : 'margin-top: 0;'}">
+                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1rem;">🌤️ Weather Conditions:</div>
+                    <div style="color: #666; font-size: 1rem; line-height: 1.6;">
+                        ${getWeatherInterpretation(rainfall, windSpeed, avgHumidity, normalizedTier)}
+                    </div>
+                </div>
+                
+                <!-- Minimalist Weather Metrics (Larger fonts) -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 2rem 0; padding: 1rem 0; border-top: 1px solid rgba(0,0,0,0.06); border-bottom: 1px solid rgba(0,0,0,0.06);">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌧️</div>
+                        <div style="font-size: 1.35rem; font-weight: 600; color: var(--text-primary);">${rainfall.toFixed(1)}mm</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); opacity: 0.8;">Rainfall</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💨</div>
+                        <div style="font-size: 1.35rem; font-weight: 600; color: var(--text-primary);">${windSpeed.toFixed(0)} km/h</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); opacity: 0.8;">Wind</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌡️</div>
+                        <div style="font-size: 1.35rem; font-weight: 600; color: var(--text-primary);">${maxTemp.toFixed(1)}°C</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); opacity: 0.8;">Temp</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💧</div>
+                        <div style="font-size: 1.35rem; font-weight: 600; color: var(--text-primary);">${avgHumidity.toFixed(0)}%</div>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); opacity: 0.8;">Humidity</div>
+                    </div>
+                </div>
+                
+                ${pagasaAdvisory ? `<div style="margin-bottom: 2rem; padding: 1rem 1.25rem; background: ${pagasaAdvisory.includes('Red') ? 'rgba(220, 53, 69, 0.15)' : pagasaAdvisory.includes('Orange') ? 'rgba(255, 152, 0, 0.15)' : 'rgba(255, 193, 7, 0.15)'}; border-left: 3px solid ${pagasaAdvisory.includes('Red') ? '#dc3545' : pagasaAdvisory.includes('Orange') ? '#ff9800' : '#ffc107'}; border-radius: 8px; font-size: 1rem; font-weight: 600; color: var(--text-primary);">
+                    <div style="margin-bottom: 0.25rem;">${pagasaAdvisory}</div>
+                    <div style="font-size: 0.9rem; font-weight: 400; color: #666; margin-top: 0.5rem;">Heavy rainfall expected. Monitor PAGASA for updates.</div>
+                </div>` : ''}
+                
+                <div style="margin-bottom: 2rem; padding: 1.25rem; background: rgba(0,0,0,0.03); border-radius: 12px; font-size: 1rem; color: var(--text-secondary); line-height: 1.7;">
+                    <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text-primary); font-size: 1.05rem;">${recIcon} RECOMMENDATION:</div>
+                    ${tierActions.map(action => `<div style="margin-bottom: 0.35rem;">• ${action}</div>`).join('')}
+                </div>
+                
+                <div style="margin-bottom: 2rem; padding: 1.25rem; background: rgba(0,0,0,0.03); border-radius: 12px; font-size: 1rem; color: var(--text-secondary); line-height: 1.7;">
+                    <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text-primary); font-size: 1.05rem;">📱 Get Updates:</div>
+                    <div style="margin-bottom: 0.35rem;">• ${lguData.lgu} LGU Facebook/Website</div>
+                    <div style="margin-bottom: 0.35rem;">• PAGASA Weather Updates</div>
+                    <div>• DepEd-NCR Announcements</div>
+                </div>
+                
+                <div style="padding: 1.25rem; background: rgba(0,0,0,0.03); border-radius: 12px; font-size: 1rem; color: var(--text-secondary); line-height: 1.7;">
+                    <div style="font-weight: 600; margin-bottom: 0.75rem; color: var(--text-primary); font-size: 1.05rem;">📍 Nearby LGUs:</div>
+                    ${nearbyLgus || 'No nearby data'}
+                </div>
+                
+                ${emergencySection}
+            `;
         }
         
         async function fetchAndRenderNewCharts(lguName) {
@@ -643,15 +1017,23 @@
             
             if (!weatherData) {
                 try { 
-                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&hourly=temperature_2m,apparent_temperature,precipitation_probability,precipitation,weather_code&timezone=Asia/Manila&forecast_days=2`;
+                    const url = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&hourly=temperature_2m,apparent_temperature,precipitation,precipitation_probability,weather_code&timezone=Asia/Manila&forecast_days=2`;
+                    console.log('Fetching from OpenMeteo:', url);
                     const response = await fetch(url);
                     if (!response.ok) throw new Error('OpenMeteo API error');
                     weatherData = await response.json();
+                    console.log('OpenMeteo Response:', weatherData);
+                    console.log('Precipitation data:', weatherData.hourly?.precipitation);
+                    console.log('Precipitation probability data:', weatherData.hourly?.precipitation_probability);
                     setCache(cacheKey, weatherData, CACHE_DURATION.HOURLY_WEATHER);
                 } catch (error) { 
                     console.error('Failed to fetch weather data:', error);
                     return; 
                 }
+            } else {
+                console.log('Using cached weather data:', weatherData);
+                console.log('Cached Precipitation data:', weatherData.hourly?.precipitation);
+                console.log('Cached Precipitation probability data:', weatherData.hourly?.precipitation_probability);
             }            const now = new Date(); 
             now.setMinutes(0, 0, 0);
             const startIndex = weatherData.hourly.time.findIndex(t => new Date(t) >= now);
@@ -659,6 +1041,24 @@
             
             renderKeyHours(weatherData, startIndex);
             renderRainChart(weatherData, startIndex);
+        }
+        
+        function getWeatherInterpretation(rainfall, windSpeed, humidity, normalizedTier) {
+            // Rule-based weather interpretation based on metrics and tier
+            let rainDesc = rainfall < 1 ? 'Minimal rain' : rainfall < 5 ? 'Light rain' : rainfall < 20 ? 'Moderate rain' : rainfall < 40 ? 'Heavy rain' : 'Very heavy rain';
+            let windDesc = windSpeed < 20 ? 'light winds' : windSpeed < 40 ? 'moderate winds' : windSpeed < 60 ? 'strong winds' : 'very strong winds';
+            let humidityDesc = humidity < 60 ? 'moderate' : humidity < 75 ? 'high' : humidity < 85 ? 'very high' : 'extremely high';
+            
+            let context = '';
+            if (normalizedTier === 'RED') {
+                context = rainfall >= 40 ? 'Flooding expected in low-lying areas.' : 'Severe weather conditions developing.';
+            } else if (normalizedTier === 'ORANGE') {
+                context = 'Conditions may worsen.';
+            } else {
+                context = rainfall < 1 ? 'Good weather for classes.' : 'Generally safe conditions.';
+            }
+            
+            return `${rainDesc} with ${windDesc}. Humidity is ${humidityDesc}. ${context}`;
         }
 
         function renderPredictionCard(recommendation, probability, riskTier = null, weatherContext = null) {
@@ -709,23 +1109,43 @@
             let weatherContextHtml = '';
             if (weatherContext) {
                 weatherContextHtml = `
-                    <div class="weather-context-display" style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid rgba(0,0,0,0.1);">
+                    <div class="weather-context-display" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid rgba(0,0,0,0.1);">
                         ${weatherContext.weather_desc ? `
-                            <div style="text-align: center;">
-                                <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Weather</div>
-                                <div style="font-size: 0.95rem; font-weight: 700; color: #111;">${weatherContext.weather_desc}</div>
+                            <div style="text-align: center; margin-bottom: 1rem;">
+                                <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">📍 Conditions</div>
+                                <div style="font-size: 1.1rem; font-weight: 700; color: #111;">${weatherContext.weather_desc}</div>
                             </div>
                         ` : ''}
-                        ${weatherContext.precipitation ? `
-                            <div style="text-align: center;">
-                                <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">Forecast</div>
-                                <div style="font-size: 0.95rem; font-weight: 700; color: #111;">${weatherContext.precipitation}</div>
-                            </div>
-                        ` : ''}
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 0.75rem;">
+                            ${weatherContext.precipitation ? `
+                                <div style="text-align: center; padding: 0.75rem; background: rgba(59, 130, 246, 0.1); border-radius: 8px;">
+                                    <div style="font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">💧 Rain</div>
+                                    <div style="font-size: 1.1rem; font-weight: 700; color: #1e40af;">${weatherContext.precipitation}</div>
+                                </div>
+                            ` : ''}
+                            ${weatherContext.temperature ? `
+                                <div style="text-align: center; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">
+                                    <div style="font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">🌡️ Temp</div>
+                                    <div style="font-size: 1.1rem; font-weight: 700; color: #991b1b;">${weatherContext.temperature}</div>
+                                </div>
+                            ` : ''}
+                            ${weatherContext.wind_speed ? `
+                                <div style="text-align: center; padding: 0.75rem; background: rgba(34, 197, 94, 0.1); border-radius: 8px;">
+                                    <div style="font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">💨 Wind</div>
+                                    <div style="font-size: 1.1rem; font-weight: 700; color: #166534;">${weatherContext.wind_speed}</div>
+                                </div>
+                            ` : ''}
+                            ${weatherContext.humidity ? `
+                                <div style="text-align: center; padding: 0.75rem; background: rgba(168, 85, 247, 0.1); border-radius: 8px;">
+                                    <div style="font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">💦 Humidity</div>
+                                    <div style="font-size: 1.1rem; font-weight: 700; color: #6b21a8;">${weatherContext.humidity}</div>
+                                </div>
+                            ` : ''}
+                        </div>
                         ${weatherContext.pagasa_advisory ? `
-                            <div style="text-align: center;">
-                                <div style="font-size: 0.75rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">PAGASA</div>
-                                <div style="font-size: 0.95rem; font-weight: 700; color: #111;">${weatherContext.pagasa_advisory.replace('PAGASA: ', '')}</div>
+                            <div style="text-align: center; margin-top: 1rem; padding: 0.75rem; background: rgba(234, 179, 8, 0.15); border-radius: 8px; border: 2px solid #eab308;">
+                                <div style="font-size: 0.75rem; color: #854d0e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem;">⚠️ PAGASA Advisory</div>
+                                <div style="font-size: 1rem; font-weight: 700; color: #854d0e;">${weatherContext.pagasa_advisory.replace('PAGASA: ', '')}</div>
                             </div>
                         ` : ''}
                     </div>
@@ -765,38 +1185,98 @@
                 ${actionsHtml}
                 ${weatherContextHtml}
                 ${monitoringHtml}
-                
-                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(0,0,0,0.1); font-size: 0.85rem; color: #666; font-style: italic;">
-                    Model confidence: ${(probability * 100).toFixed(0)}% • Data-driven guidance for DepEd officials
-                </div>
             `;
         }
 
         function renderWeatherMetrics(dataArray) {
             if (!dom.weatherMetricsSection) return; // Skip if element doesn't exist
             dom.weatherMetricsSection.style.display = 'block';
-            const avgRain = (dataArray.reduce((s, p) => s + (p.key_factors.forecasted_rainfall_24h || 0), 0) / dataArray.length).toFixed(1);
-            const maxWind = Math.max(...dataArray.map(p => p.key_factors.wind_speed_max || 0)).toFixed(0);
+            
+            // Get weather data from top-level or from prediction
+            const weather = appState.predictionData?.weather || {};
+            const avgRain = (weather.precipitation_sum_mm || 0).toFixed(1);
+            const maxWind = (weather.wind_speed_max_kmh || 0).toFixed(0);
+            const maxTemp = (weather.temperature_max_c || 0).toFixed(1);
+            const avgHumidity = (weather.humidity_mean_pct || 0).toFixed(0);
+            
             const rainCtx = avgRain < 15 ? { text: 'Light to Moderate' } : { text: 'Heavy Rain', class: 'danger' };
             const windCtx = maxWind < 62 ? { text: 'Light to Strong' } : { text: 'Gale Force', class: 'danger' };
-            dom.weatherMetricsGrid.innerHTML = `<div class="weather-metric"><div class="metric-icon-wrapper"><i data-lucide="cloud-rain"></i></div><div class="metric-content"><div class="metric-label">Rainfall (24h)</div><div class="metric-value-wrapper"><span class="metric-value">${avgRain}mm</span><span class="metric-context ${rainCtx.class||''}">${rainCtx.text}</span></div></div></div><div class="weather-metric"><div class="metric-icon-wrapper"><i data-lucide="wind"></i></div><div class="metric-content"><div class="metric-label">Max Wind</div><div class="metric-value-wrapper"><span class="metric-value">${maxWind} km/h</span><span class="metric-context ${windCtx.class||''}">${windCtx.text}</span></div></div></div>`;
+            
+            dom.weatherMetricsGrid.innerHTML = `
+                <div class="weather-metric">
+                    <div class="metric-icon-wrapper"><i data-lucide="cloud-rain"></i></div>
+                    <div class="metric-content">
+                        <div class="metric-label">Rainfall (24h)</div>
+                        <div class="metric-value-wrapper">
+                            <span class="metric-value">${avgRain}mm</span>
+                            <span class="metric-context ${rainCtx.class||''}">${rainCtx.text}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="weather-metric">
+                    <div class="metric-icon-wrapper"><i data-lucide="wind"></i></div>
+                    <div class="metric-content">
+                        <div class="metric-label">Max Wind</div>
+                        <div class="metric-value-wrapper">
+                            <span class="metric-value">${maxWind} km/h</span>
+                            <span class="metric-context ${windCtx.class||''}">${windCtx.text}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="weather-metric">
+                    <div class="metric-icon-wrapper"><i data-lucide="thermometer"></i></div>
+                    <div class="metric-content">
+                        <div class="metric-label">Max Temperature</div>
+                        <div class="metric-value-wrapper">
+                            <span class="metric-value">${maxTemp}°C</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="weather-metric">
+                    <div class="metric-icon-wrapper"><i data-lucide="droplets"></i></div>
+                    <div class="metric-content">
+                        <div class="metric-label">Humidity</div>
+                        <div class="metric-value-wrapper">
+                            <span class="metric-value">${avgHumidity}%</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
         }
         
         function renderRecommendationReasons(lguData) {
             dom.reasonsList.innerHTML = '';
             let hasReasons = false;
-            if (lguData?.pagasa_status?.hasActiveTyphoon && lguData.pagasa_status.metroManilaAffected) {
-                dom.reasonsList.innerHTML += `<div class="reason-item typhoon-reason"><i data-lucide="cyclone"></i><span>Official warning for <strong>${lguData.pagasa_status.typhoonName}</strong> (TCWS #${lguData.pagasa_status.tcwsLevel}) is a primary factor.</span></div>`;
+            
+            // Check for typhoon from top-level pagasa_status or lgu-level
+            const pagasa = appState.predictionData?.pagasa_status || lguData?.pagasa_status;
+            if (pagasa?.has_active_typhoon && pagasa.typhoon_name) {
+                dom.reasonsList.innerHTML += `<div class="reason-item typhoon-reason"><i data-lucide="cyclone"></i><span>Official warning for <strong>${pagasa.typhoon_name}</strong> (TCWS #${pagasa.tcws_level || 0}) is a primary factor.</span></div>`;
                 hasReasons = true;
             }
-            if (lguData && (lguData.key_factors.forecasted_rainfall_24h > 30 || lguData.key_factors.wind_speed_max > 60)) {
+            
+            // Check weather factors from top-level weather data
+            const weather = appState.predictionData?.weather || {};
+            const rainfall = weather.precipitation_sum_mm || 0;
+            const windSpeed = weather.wind_speed_max_kmh || 0;
+            
+            if (rainfall > 30 || windSpeed > 60) {
                 let riskFactors = [];
-                if (lguData.key_factors.forecasted_rainfall_24h > 30) riskFactors.push(`heavy rain (${lguData.key_factors.forecasted_rainfall_24h.toFixed(1)}mm)`);
-                if (lguData.key_factors.wind_speed_max > 60) riskFactors.push(`strong winds (${lguData.key_factors.wind_speed_max.toFixed(0)} km/h)`);
+                if (rainfall > 30) riskFactors.push(`heavy rain (${rainfall.toFixed(1)}mm)`);
+                if (windSpeed > 60) riskFactors.push(`strong winds (${windSpeed.toFixed(0)} km/h)`);
                 dom.reasonsList.innerHTML += `<div class="reason-item model-reason"><i data-lucide="brain-circuit"></i><span>AI model predicts high risk due to: ${riskFactors.join(' and ')}.</span></div>`;
                 hasReasons = true;
             }
+            
+            // Show risk tier recommendation if available
+            if (lguData?.risk_tier?.recommendation) {
+                dom.reasonsList.innerHTML += `<div class="reason-item model-reason"><i data-lucide="shield-alert"></i><span>${lguData.risk_tier.recommendation}</span></div>`;
+                hasReasons = true;
+            }
+            
             dom.reasonsContainer.style.display = hasReasons ? 'block' : 'none';
+            lucide.createIcons();
         }
 
         async function renderHourlyForecast(lguName) {
@@ -913,6 +1393,9 @@
             const hours = 12;
             const chartData = [];
             
+            console.log('Rain Chart - Weather Data:', weatherData);
+            console.log('Rain Chart - Precipitation array:', weatherData.hourly.precipitation);
+            
             for (let i = 0; i < hours; i++) {
                 const index = startIndex + i;
                 if (index >= weatherData.hourly.time.length) break;
@@ -924,15 +1407,19 @@
                 const isDaytime = hour >= 6 && hour < 18;
                 const dayNightEmoji = isDaytime ? '☀️' : '🌙';
                 
+                const rainfall = weatherData.hourly.precipitation[index] || 0;
+                
                 chartData.push({
                     time: time.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
                     temp: Math.round(weatherData.hourly.temperature_2m[index]),
                     icon: getWeatherIconFromCode(weatherData.hourly.weather_code[index], hour),
-                    rainfall: weatherData.hourly.precipitation[index],
-                    probability: weatherData.hourly.precipitation_probability[index],
+                    rainfall: rainfall,
+                    probability: weatherData.hourly.precipitation_probability[index] || 0,
                     dayNightEmoji: dayNightEmoji
                 });
             }
+            
+            console.log('Rain Chart - Chart Data:', chartData);
             
             // Helper function to get temperature gradient
             function getTempGradient(temp) {
@@ -1097,18 +1584,55 @@
         }
 
         function renderTyphoonAlert() {
-            const pagasa = appState.predictionData?.predictions?.[0]?.pagasa_status;
-            if (pagasa?.hasActiveTyphoon) {
-                const isDirect = pagasa.metroManilaAffected;
+            // Check top-level pagasa_status first, then fall back to first prediction
+            const pagasa = appState.predictionData?.pagasa_status || appState.predictionData?.predictions?.[0]?.pagasa_status;
+            
+            if (pagasa?.has_active_typhoon || pagasa?.hasActiveTyphoon) {
+                const isDirect = pagasa.metro_manila_affected || pagasa.metroManilaAffected;
+                const typhoonName = pagasa.typhoon_name || pagasa.typhoonName;
+                const tcwsLevel = pagasa.tcws_level || pagasa.tcwsLevel || 0;
+                
                 dom.typhoonAlert.style.display = 'flex';
                 dom.typhoonAlert.className = isDirect ? 'alert-box typhoon-direct' : 'alert-box';
-                dom.typhoonAlert.innerHTML = `<i data-lucide="${isDirect ? 'cyclone' : 'wind'}"></i> <span>TYPHOON ${isDirect ? 'WARNING' : 'ALERT'}: <strong>${pagasa.typhoonName}</strong> is ${isDirect ? `affecting Metro Manila (TCWS #${pagasa.tcwsLevel})` : 'being monitored nearby'}.</span>`;
-            } else { dom.typhoonAlert.style.display = 'none'; }
+                
+                if (typhoonName) {
+                    dom.typhoonAlert.innerHTML = `<i data-lucide="${isDirect ? 'alert-triangle' : 'wind'}"></i> <span>TYPHOON ${isDirect ? 'WARNING' : 'ALERT'}: <strong>${typhoonName}</strong> is ${isDirect ? `affecting Metro Manila (TCWS #${tcwsLevel})` : 'being monitored in the region'}.</span>`;
+                } else {
+                    dom.typhoonAlert.innerHTML = `<i data-lucide="wind"></i> <span>TYPHOON ALERT: Active tropical cyclone detected in the region. Monitor PAGASA for updates.</span>`;
+                }
+            } else { 
+                dom.typhoonAlert.style.display = 'none'; 
+            }
         }
 
         function renderRainfallAlert() {
+            // Check top-level pagasa_status first, then fall back to first prediction
+            const pagasaTop = appState.predictionData?.pagasa_status;
             const rainfallWarning = appState.predictionData?.predictions?.[0]?.pagasa_status?.rainfallWarning;
             
+            // Check top-level first (has_rainfall_warning, rainfall_warning_level)
+            if (pagasaTop && (pagasaTop.has_rainfall_warning || pagasaTop.rainfall_warning_level)) {
+                const level = pagasaTop.rainfall_warning_level;
+                
+                if (level > 0) {
+                    dom.rainfallAlert.style.display = 'flex';
+                    
+                    // Map numeric level to color names
+                    const levelMap = {
+                        3: { name: 'RED', class: 'rainfall-red', icon: 'cloud-rain', title: '🔴 RED RAINFALL WARNING' },
+                        2: { name: 'ORANGE', class: 'rainfall-orange', icon: 'cloud-rain', title: '🟠 ORANGE RAINFALL WARNING' },
+                        1: { name: 'YELLOW', class: 'rainfall-yellow', icon: 'cloud-rain', title: '🟡 YELLOW RAINFALL WARNING' }
+                    };
+                    
+                    const warningInfo = levelMap[level] || levelMap[1];
+                    
+                    dom.rainfallAlert.className = `alert-box ${warningInfo.class}`;
+                    dom.rainfallAlert.innerHTML = `<i data-lucide="${warningInfo.icon}"></i> <span><strong>${warningInfo.title}</strong>: Heavy rainfall expected in Metro Manila. Monitor PAGASA advisories.</span>`;
+                    return;
+                }
+            }
+            
+            // Fall back to detailed rainfall warning object from predictions
             if (!rainfallWarning) {
                 dom.rainfallAlert.style.display = 'none';
                 return;

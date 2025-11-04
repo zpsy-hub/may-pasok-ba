@@ -13,24 +13,30 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary-50: #eff6ff; --primary-100: #dbeafe; --primary-200: #bfdbfe; --primary-300: #93c5fd; --primary-400: #60a5fa; --primary-500: #3b82f6; --primary-600: #2563eb; --primary-700: #1d4ed8; --primary-800: #1e40af; --primary-900: #1e3a8a;
-            --success-50: #f0fdf4; --success-100: #dcfce7; --success-200: #bbf7d0; --success-300: #86efac; --success-400: #4ade80; --success-500: #22c55e; --success-600: #16a34a;
-            --warning-50: #fffbeb; --warning-100: #fef3c7; --warning-200: #fde68a; --warning-300: #fcd34d; --warning-400: #fbbf24; --warning-500: #f59e0b; --warning-600: #d97706;
-            --danger-50: #fef2f2; --danger-100: #fee2e2; --danger-200: #fecaca; --danger-300: #fca5a5; --danger-400: #f87171; --danger-500: #ef4444; --danger-600: #dc2626;
-            --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-300: #cbd5e1; --slate-400: #94a3b8; --slate-500: #64748b; --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b; --slate-900: #0f172a;
-            --card-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.08);
-            --card-shadow-lg: 0 10px 25px rgba(0,0,0,0.07), 0 3px 6px rgba(0,0,0,0.05);
+            --primary: #007bff;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
         }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        
+        input, select, button, textarea {
+            font-family: 'Inter', sans-serif;
+        }
+        
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--slate-50);
-            color: var(--slate-700);
+            background-color: #ffffff;
+            color: var(--text-primary);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -38,28 +44,27 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 2rem 1.5rem 4rem;
+            padding: 3rem 2rem;
         }
 
         .back-btn {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: #ffffff;
-            color: var(--primary-600);
+            background: rgba(0,123,255,0.1);
+            color: var(--primary);
             padding: 0.75rem 1.5rem;
             border-radius: 12px;
             text-decoration: none;
             font-weight: 600;
-            box-shadow: var(--card-shadow);
+            border: 2px solid rgba(0,123,255,0.2);
             transition: all 0.2s;
             margin-bottom: 2rem;
         }
 
         .back-btn:hover {
+            background: rgba(0,123,255,0.15);
             transform: translateY(-2px);
-            box-shadow: var(--card-shadow-lg);
-            background: var(--primary-50);
         }
 
         .header {
@@ -68,17 +73,18 @@
             padding: 2.5rem 3rem;
             margin-bottom: 2rem;
             box-shadow: var(--card-shadow);
+            border: 2px solid #e9ecef;
         }
 
         .header h1 {
-            color: var(--primary-600);
+            color: var(--primary);
             font-size: 2rem;
             font-weight: 800;
             margin-bottom: 1rem;
         }
 
         .header p {
-            color: var(--slate-600);
+            color: var(--text-secondary);
             line-height: 1.7;
             font-size: 1rem;
         }
@@ -86,7 +92,7 @@
         .badge {
             display: inline-block;
             padding: 0.5rem 1rem;
-            background: var(--success-500);
+            background: var(--success);
             color: white;
             border-radius: 20px;
             font-size: 0.875rem;
@@ -96,7 +102,7 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -106,16 +112,16 @@
             border-radius: 16px;
             padding: 2rem;
             box-shadow: var(--card-shadow);
+            border: 2px solid #e9ecef;
             transition: transform 0.2s;
         }
 
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: var(--card-shadow-lg);
+            border-color: var(--primary);
         }
 
         .stat-card h3 {
-            color: var(--primary-600);
             font-size: 0.875rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -126,11 +132,10 @@
         .stat-card .value {
             font-size: 2.5rem;
             font-weight: 800;
-            color: var(--slate-800);
         }
 
         .stat-card .label {
-            color: var(--slate-500);
+            color: var(--text-secondary);
             font-size: 0.875rem;
             margin-top: 0.5rem;
         }
@@ -141,12 +146,13 @@
             padding: 2.5rem 3rem;
             margin-bottom: 2rem;
             box-shadow: var(--card-shadow);
+            border: 2px solid #e9ecef;
         }
 
         .chart-container h2 {
-            color: var(--slate-800);
+            color: var(--text-primary);
             font-size: 1.5rem;
-            font-weight: 800;
+            font-weight: 700;
             margin-bottom: 1.5rem;
         }
 
@@ -157,14 +163,10 @@
         }
 
         .filters {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             display: flex;
-            gap: 15px;
+            gap: 1rem;
             flex-wrap: wrap;
+            margin-bottom: 1.5rem;
         }
 
         .filter-group {
@@ -174,26 +176,26 @@
 
         .filter-group label {
             display: block;
-            color: #667eea;
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
         }
 
         .filter-group select {
             width: 100%;
-            padding: 10px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1rem;
             background: white;
             cursor: pointer;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.2s ease;
         }
 
         .filter-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
         }
 
         .table-container {
@@ -201,41 +203,44 @@
             border-radius: 24px;
             padding: 2.5rem 3rem;
             box-shadow: var(--card-shadow);
+            border: 2px solid #e9ecef;
             overflow-x: auto;
+            margin-bottom: 2rem;
         }
 
         .table-container h2 {
-            color: var(--slate-800);
+            color: var(--text-primary);
             font-size: 1.5rem;
-            font-weight: 800;
+            font-weight: 700;
             margin-bottom: 1.5rem;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            font-family: 'Inter', sans-serif;
         }
 
         th {
-            background: var(--primary-600);
-            color: white;
+            background: linear-gradient(135deg, #e8f4ff, #f0f7ff);
+            color: var(--primary);
             padding: 1rem;
             text-align: left;
             font-weight: 600;
             font-size: 0.875rem;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            border: 1px solid #e9ecef;
+            font-family: 'Inter', sans-serif;
         }
 
         td {
             padding: 1rem;
-            border-bottom: 1px solid var(--slate-200);
+            border: 1px solid #e9ecef;
             font-size: 0.875rem;
+            font-family: 'Inter', sans-serif;
         }
 
         tr:hover {
-            background: var(--slate-50);
+            background: #f8f9fa;
         }
 
         .risk-badge {
@@ -248,52 +253,29 @@
             letter-spacing: 0.5px;
         }
 
-        .risk-low {
-            background: var(--success-100);
-            color: var(--success-600);
+        .risk-normal {
+            background: #d4edda;
+            color: #155724;
         }
 
-        .risk-medium {
-            background: var(--warning-100);
-            color: var(--warning-600);
+        .risk-alert {
+            background: #fff3cd;
+            color: #856404;
         }
 
-        .risk-high {
-            background: var(--danger-100);
-            color: var(--danger-600);
+        .risk-suspension {
+            background: #f8d7da;
+            color: #721c24;
         }
 
         .prob-cell {
             cursor: help;
             position: relative;
             font-weight: 600;
-            color: var(--primary-600);
         }
 
         .prob-cell:hover {
-            background: var(--slate-100);
-        }
-
-        .tooltip {
-            position: absolute;
-            display: none;
-            background: var(--slate-900);
-            color: white;
-            padding: 0.75rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            z-index: 1000;
-            min-width: 200px;
-            box-shadow: var(--card-shadow-lg);
-            left: 50%;
-            transform: translateX(-50%);
-            top: 100%;
-            margin-top: 0.5rem;
-            white-space: nowrap;
-        }
-
-        .prob-cell:hover .tooltip {
-            display: block;
+            background: #f8f9fa;
         }
 
         .loading {
@@ -347,14 +329,10 @@
         }
 
         .filters {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--card-shadow);
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
+            margin-bottom: 1.5rem;
         }
 
         .filter-group {
@@ -399,30 +377,128 @@
         <a href="learn-more.html" class="back-btn">← Back to Learn More</a>
 
         <div class="header">
-            <h1>📊 Prediction Logs & Monitoring Dashboard</h1>
+            <h1>📊 Historical Prediction Logs & Performance Analysis</h1>
             <p>
-                This dashboard shows <strong>real predictions</strong> made by our model during September and October 2025.
-                These predictions were generated in real-time with live weather data for each day,
-                providing a comprehensive view of the system's performance and prediction history.
+                This dashboard shows <strong>1,037 historical predictions</strong> made during September-October 2024,
+                validated against <strong>actual suspension outcomes</strong>. See how accurately the model predicted
+                real class suspensions with detailed performance metrics and confusion matrix analysis.
             </p>
-            <span class="badge">✅ PRODUCTION DATA - Real-Time Predictions</span>
             <div id="lastUpdated" style="margin-top: 15px; padding: 12px; background: #e0e7ff; border-left: 4px solid #667eea; border-radius: 8px; font-size: 14px;">
-                <strong>📅 Last Updated:</strong> <span id="updateTimestamp">Loading...</span><br>
-                <strong>📊 Data Period:</strong> <span id="dataPeriod">Loading...</span>
+                <strong>📅 Data Period:</strong> <span id="dataPeriod">Loading...</span><br>
+                <strong>� Validated Predictions:</strong> 90 predictions matched with actual outcomes (6 suspension days)
             </div>
             <div class="info-note">
                 <strong>📌 About This Dashboard:</strong>
                 <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
-                    <li><strong>Real-Time Logs:</strong> All predictions shown were made in production at 6 AM Manila time for the next day</li>
-                    <li><strong>Model Evolution:</strong> Different models were used on different dates as the system evolved</li>
-                    <li><strong>Data Limitations:</strong> Weather data and feature importance were not saved in early prediction logs</li>
-                    <li><strong>⚠️ Forecast Updates:</strong> Weather forecasts change regularly. Predictions reflect the forecast data available at the time of prediction.</li>
+                    <li><strong>Historical Data:</strong> 1,037 predictions across 17 Metro Manila LGUs for Sept-Oct 2024</li>
+                    <li><strong>Actual Outcomes:</strong> 6 suspension days validated (Sept 1, 22-26) from official DILG/LGU announcements</li>
+                    <li><strong>Performance Metrics:</strong> Model accuracy: 51.1%, Precision: 67.4%, Recall: 51.7%</li>
+                    <li><strong>Model Version:</strong> EasyEnsemble v1.0.0 with 33 engineered weather features</li>
                 </ul>
             </div>
         </div>
 
         <div class="stats-grid" id="statsGrid">
             <div class="loading">Loading statistics...</div>
+        </div>
+
+        <!-- Threshold Explanation -->
+        <div style="background: white; padding: 2rem; border-radius: 16px; box-shadow: var(--card-shadow); margin: 2rem 0;">
+            <h2 style="margin-bottom: 1rem; color: var(--slate-900);">🎯 Understanding Risk Thresholds</h2>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+                <!-- Normal/Continue -->
+                <div style="padding: 1.5rem; background: var(--success-50); border-radius: 12px; border-left: 4px solid var(--success-500);">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🟢</div>
+                    <h3 style="color: var(--success-700); margin-bottom: 0.5rem;">NORMAL (Continue)</h3>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--success-600); margin-bottom: 0.5rem;">&lt; 40%</div>
+                    <p style="color: var(--slate-600); font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                        <strong>Meaning:</strong> Low suspension risk. Weather conditions are favorable.<br>
+                        <strong>Action:</strong> Proceed with normal class schedule. Continue routine monitoring.
+                    </p>
+                </div>
+                
+                <!-- Alert/Monitor -->
+                <div style="padding: 1.5rem; background: var(--warning-50); border-radius: 12px; border-left: 4px solid var(--warning-500);">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🟠</div>
+                    <h3 style="color: var(--warning-700); margin-bottom: 0.5rem;">ALERT (Monitor)</h3>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning-600); margin-bottom: 0.5rem;">40% - 55%</div>
+                    <p style="color: var(--slate-600); font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                        <strong>Meaning:</strong> Moderate suspension risk. Conditions may worsen.<br>
+                        <strong>Action:</strong> Prepare for possible suspension. Monitor every 2 hours. Have contingency plans ready.
+                    </p>
+                </div>
+                
+                <!-- Suspension/Act -->
+                <div style="padding: 1.5rem; background: var(--danger-50); border-radius: 12px; border-left: 4px solid var(--danger-500);">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔴</div>
+                    <h3 style="color: var(--danger-700); margin-bottom: 0.5rem;">SUSPENSION (Act)</h3>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--danger-600); margin-bottom: 0.5rem;">&gt; 55%</div>
+                    <p style="color: var(--slate-600); font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                        <strong>Meaning:</strong> High suspension risk. Severe weather expected.<br>
+                        <strong>Action:</strong> SUSPEND classes immediately. Issue announcements. Activate safety protocols.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Summary Table -->
+        <div id="dailySummarySection" style="background: white; padding: 2rem; border-radius: 16px; box-shadow: var(--card-shadow); margin: 2rem 0;">
+            <h2 style="margin-bottom: 1rem; color: var(--slate-900);">📅 Daily Prediction Summary</h2>
+            <p style="color: var(--slate-600); margin-bottom: 1.5rem;">Per-day breakdown showing how many LGUs were predicted in each risk tier</p>
+            <div style="overflow-x: auto;">
+                <table id="dailySummaryTable" style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: var(--slate-100);">
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: left;">Date</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">🟢 Normal<br>(&lt;40%)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">🟠 Alert<br>(40-55%)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">🔴 Suspension<br>(&gt;55%)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">Total LGUs</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: left;">Actual Outcome</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">🌡️ Temp<br>(°C)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">🌧️ Rain<br>(mm)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">💨 Wind<br>(km/h)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">💧 Humidity<br>(%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dailySummaryBody">
+                        <tr><td colspan="10" style="text-align: center; padding: 1rem; color: var(--slate-500);">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Performance Metrics Section -->
+        <div id="performanceSection" style="display: none; margin: 2rem 0;">
+            <h2 style="margin-bottom: 1.5rem; color: var(--slate-900);">🎯 Model Performance Analysis</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                <!-- Confusion Matrix -->
+                <div style="background: white; padding: 2rem; border-radius: 16px; box-shadow: var(--card-shadow);">
+                    <h3 style="margin-bottom: 1rem; color: var(--slate-700); font-size: 1.1rem;">Confusion Matrix</h3>
+                    <div id="confusionMatrix"></div>
+                </div>
+                
+                <!-- Performance Breakdown -->
+                <div style="background: white; padding: 2rem; border-radius: 16px; box-shadow: var(--card-shadow);">
+                    <h3 style="margin-bottom: 1rem; color: var(--slate-700); font-size: 1.1rem;">Prediction Breakdown</h3>
+                    <div id="performanceBreakdown"></div>
+                </div>
+            </div>
+            
+            <!-- What the metrics mean -->
+            <div style="background: var(--slate-50); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--primary-500);">
+                <h4 style="margin-bottom: 0.75rem; color: var(--slate-700);">📚 Understanding the Metrics</h4>
+                <ul style="margin: 0; padding-left: 1.5rem; color: var(--slate-600); line-height: 1.8;">
+                    <li><strong>Accuracy (51.1%):</strong> Overall, the model correctly predicted 51.1% of outcomes</li>
+                    <li><strong>Precision (67.4%):</strong> When the model predicts a suspension, it's correct 67.4% of the time</li>
+                    <li><strong>Recall (51.7%):</strong> The model successfully detects 51.7% of actual suspensions</li>
+                    <li><strong>True Positives (31):</strong> Correctly predicted suspensions that actually happened</li>
+                    <li><strong>False Positives (15):</strong> Predicted suspensions that didn't happen (false alarms)</li>
+                    <li><strong>False Negatives (29):</strong> Missed suspensions (didn't predict but they happened)</li>
+                    <li><strong>True Negatives (15):</strong> Correctly predicted no suspension when none occurred</li>
+                </ul>
+            </div>
         </div>
 
         <div class="chart-container">
@@ -432,37 +508,55 @@
             </div>
         </div>
 
-        <div class="filters">
-            <div class="filter-group">
-                <label for="monthFilter">Filter by Month</label>
-                <select id="monthFilter">
-                    <option value="">All Months</option>
-                    <option value="2025-09">September 2025</option>
-                    <option value="2025-10">October 2025</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="dateFilter">Filter by Date</label>
-                <select id="dateFilter">
-                    <option value="">All Dates</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="lguFilter">Filter by LGU</label>
-                <select id="lguFilter">
-                    <option value="">All LGUs</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="modelFilter">Filter by Model</label>
-                <select id="modelFilter">
-                    <option value="">All Models</option>
-                </select>
-            </div>
-        </div>
-
         <div class="table-container">
-            <h2>📋 Detailed Predictions</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="margin: 0;">📋 Detailed Predictions</h2>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <input 
+                        type="text" 
+                        id="tableSearch" 
+                        placeholder="🔍 Search by LGU or date..." 
+                        style="padding: 0.5rem 1rem; border: 1px solid var(--slate-300); border-radius: 8px; width: 250px; font-size: 0.9rem;"
+                    />
+                    <button 
+                        id="clearFilters" 
+                        style="padding: 0.5rem 1rem; background: var(--slate-100); border: 1px solid var(--slate-300); border-radius: 8px; cursor: pointer; font-size: 0.9rem;"
+                    >
+                        Clear All Filters
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filter Dropdowns -->
+            <div class="filters" style="margin-bottom: 1.5rem;">
+                <div class="filter-group">
+                    <label for="monthFilter">Filter by Month</label>
+                    <select id="monthFilter">
+                        <option value="">All Months</option>
+                        <option value="2025-09">September 2025</option>
+                        <option value="2025-10">October 2025</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="dateFilter">Filter by Date</label>
+                    <select id="dateFilter">
+                        <option value="">All Dates</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="lguFilter">Filter by LGU</label>
+                    <select id="lguFilter">
+                        <option value="">All LGUs</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="modelFilter">Filter by Model</label>
+                    <select id="modelFilter">
+                        <option value="">All Models</option>
+                    </select>
+                </div>
+            </div>
+            
             <table id="predictionsTable">
                 <thead>
                     <tr>
@@ -471,13 +565,14 @@
                         <th>LGU</th>
                         <th>Probability</th>
                         <th>Risk Level</th>
-                        <th>Recommendation</th>
-                        <th>Model</th>
+                        <th>Predicted</th>
+                        <th>Actual</th>
+                        <th>Result</th>
                         <th>PAGASA</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr><td colspan="8" class="loading">Loading predictions...</td></tr>
+                    <tr><td colspan="9" class="loading">Loading predictions...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -516,10 +611,15 @@
                 
                 allData = data.predictions;
                 
+                // Store weather data in global variable for use in displayDailySummary
+                window.dailyWeatherData = data.daily_weather_summary || {};
+                
                 // Update timestamps and data period
                 updateTimestamps(data);
                 
                 displayStats(data.metadata);
+                displayPerformanceMetrics(data.performance_metrics, data.metadata);
+                displayDailySummary(allData);
                 populateFilters();
                 displayPredictions(allData);
                 createChart(allData);
@@ -540,78 +640,156 @@
         }
 
         function updateTimestamps(data) {
-            // Use metadata timestamps if available
-            if (data.metadata.last_updated) {
-                const lastUpdated = new Date(data.metadata.last_updated);
-                document.getElementById('updateTimestamp').textContent = 
-                    lastUpdated.toLocaleString('en-US', {
-                        dateStyle: 'medium',
-                        timeStyle: 'short'
-                    }) + ' (Manila Time)';
-            } else {
-                // Fallback: Find the most recent prediction timestamp
-                const timestamps = allData.map(p => new Date(p.prediction_date + 'T' + p.prediction_time));
-                const latestPrediction = new Date(Math.max(...timestamps));
-                document.getElementById('updateTimestamp').textContent = 
-                    latestPrediction.toLocaleString('en-US', {
-                        dateStyle: 'medium',
-                        timeStyle: 'short'
-                    });
-            }
-            
             // Display date range
             const dates = [...new Set(allData.map(p => p.prediction_date))].sort();
             if (dates.length > 0) {
                 const firstDate = new Date(dates[0] + 'T00:00:00');
                 const lastDate = new Date(dates[dates.length - 1] + 'T00:00:00');
-                document.getElementById('dataPeriod').textContent = 
-                    `${firstDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - ${lastDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} (${dates.length} days)`;
+                const dataPeriodEl = document.getElementById('dataPeriod');
+                if (dataPeriodEl) {
+                    dataPeriodEl.textContent = 
+                        `${firstDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} - ${lastDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} (${dates.length} days)`;
+                }
             }
         }
 
         function displayStats(metadata) {
+            // Show only 3 key stats
+            
             const statsHTML = `
                 <div class="stat-card">
-                    <h3>Total Predictions</h3>
-                    <div class="value">${metadata.total_predictions.toLocaleString()}</div>
-                    <div class="label">Across all LGUs and dates</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Unique Dates</h3>
-                    <div class="value">${metadata.unique_dates}</div>
-                    <div class="label">Days analyzed in October</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Average Probability</h3>
-                    <div class="value">${(metadata.average_probability * 100).toFixed(1)}%</div>
-                    <div class="label">Mean suspension probability</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Max Probability</h3>
-                    <div class="value">${(metadata.max_probability * 100).toFixed(1)}%</div>
-                    <div class="label">Highest prediction</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Risk Distribution</h3>
-                    <div class="risk-dist">
-                        <div class="risk-dist-item risk-high">
-                            High<br><strong>${metadata.risk_distribution.high}</strong>
-                        </div>
-                        <div class="risk-dist-item risk-medium">
-                            Medium<br><strong>${metadata.risk_distribution.medium}</strong>
-                        </div>
-                        <div class="risk-dist-item risk-low">
-                            Low<br><strong>${metadata.risk_distribution.low}</strong>
-                        </div>
+                    <h3 style="color: #007bff;">📊 Historical Analysis</h3>
+                    <div class="value" style="font-size: 2.5rem; color: #212529;">Sept-Oct 2024</div>
+                    <div class="label" style="color: #6c757d;">
+                        Analyzing prediction patterns
                     </div>
                 </div>
+                
                 <div class="stat-card">
-                    <h3>PAGASA Triggers</h3>
-                    <div class="value">${metadata.days_with_pagasa_triggers}</div>
-                    <div class="label">Days with weather warnings</div>
+                    <h3 style="color: #28a745;">📋 Total Predictions</h3>
+                    <div class="value" style="font-size: 2.5rem; color: #212529;">${metadata.total_predictions.toLocaleString()}</div>
+                    <div class="label" style="color: #6c757d;">Across 17 Metro Manila LGUs</div>
+                </div>
+                
+                <div class="stat-card">
+                    <h3 style="color: #ffc107;">📅 Days Analyzed</h3>
+                    <div class="value" style="font-size: 2.5rem; color: #212529;">${metadata.unique_dates}</div>
+                    <div class="label" style="color: #6c757d;">Complete Sept-Oct 2024 period</div>
                 </div>
             `;
             document.getElementById('statsGrid').innerHTML = statsHTML;
+        }
+
+        function displayPerformanceMetrics(performance, metadata) {
+            // Hide performance metrics section entirely
+            document.getElementById('performanceSection').style.display = 'none';
+        }
+
+        function displayDailySummary(data) {
+            // Group predictions by date
+            const dateGroups = {};
+            data.forEach(p => {
+                if (!dateGroups[p.prediction_date]) {
+                    dateGroups[p.prediction_date] = {
+                        normal: 0,
+                        alert: 0,
+                        suspension: 0,
+                        total: 0,
+                        actualSuspension: null
+                    };
+                }
+                
+                const group = dateGroups[p.prediction_date];
+                group.total++;
+                
+                // Count by risk tier
+                const prob = p.suspension_probability;
+                if (prob < 0.40) {
+                    group.normal++;
+                } else if (prob < 0.55) {
+                    group.alert++;
+                } else {
+                    group.suspension++;
+                }
+                
+                // Track if there was an actual suspension
+                if (p.actual_suspended === true) {
+                    group.actualSuspension = true;
+                } else if (group.actualSuspension === null && p.actual_suspended === false) {
+                    group.actualSuspension = false;
+                }
+            });
+            
+            // Sort dates
+            const sortedDates = Object.keys(dateGroups).sort();
+            
+            // Generate table rows
+            const tbody = document.getElementById('dailySummaryBody');
+            tbody.innerHTML = sortedDates.map(date => {
+                const group = dateGroups[date];
+                const dateObj = new Date(date + 'T00:00:00');
+                const formattedDate = dateObj.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                
+                // Get weather data for this date
+                const weather = window.dailyWeatherData?.[date] || {};
+                const temp = weather.avg_temp !== null && weather.avg_temp !== undefined ? 
+                    `${weather.avg_temp}°C` : '—';
+                const rainfall = weather.avg_rainfall !== null && weather.avg_rainfall !== undefined ? 
+                    `${weather.avg_rainfall}mm` : '—';
+                const wind = weather.max_wind !== null && weather.max_wind !== undefined ? 
+                    `${weather.max_wind} km/h` : '—';
+                const humidity = weather.avg_humidity !== null && weather.avg_humidity !== undefined ? 
+                    `${weather.avg_humidity}%` : '—';
+                
+                // Highlight high rainfall (>40mm) with red background
+                const rainfallStyle = weather.avg_rainfall > 40 ? 
+                    'background: var(--danger-100); font-weight: 600;' : '';
+                
+                // Determine actual outcome
+                let actualOutcome = '—';
+                let outcomeColor = 'var(--slate-400)';
+                if (group.actualSuspension === true) {
+                    actualOutcome = '⛔ Suspended';
+                    outcomeColor = 'var(--danger-600)';
+                } else if (group.actualSuspension === false) {
+                    actualOutcome = '✅ Normal';
+                    outcomeColor = 'var(--success-600)';
+                }
+                
+                // Highlight row if there was a suspension
+                const rowStyle = group.actualSuspension === true ? 
+                    'background: var(--danger-50);' : '';
+                
+                return `
+                    <tr style="${rowStyle}">
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; font-weight: 600; background: #f8fafb;">${formattedDate}</td>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #d4edda;">
+                            <strong style="font-size: 1.25rem; color: #155724;">${group.normal}</strong>
+                        </td>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #fff3cd;">
+                            <strong style="font-size: 1.25rem; color: #856404;">${group.alert}</strong>
+                        </td>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #f8d7da;">
+                            <strong style="font-size: 1.25rem; color: #721c24;">${group.suspension}</strong>
+                        </td>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; font-weight: 600; background: #e8f4ff;">
+                            ${group.total}
+                        </td>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; color: ${outcomeColor}; font-weight: 600; background: #f8fafb;">
+                            ${actualOutcome}
+                        </td>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #fff9f0;">${temp}</td>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: ${weather.avg_rainfall > 40 ? '#f8d7da' : '#e3f2fd'}; ${weather.avg_rainfall > 40 ? 'color: #721c24; font-weight: 600;' : ''}">${rainfall}</td>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #f0f4ff;">${wind}</td>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #e8f5e9;">${humidity}</td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function populateFilters() {
@@ -655,6 +833,21 @@
             dateFilter.addEventListener('change', filterData);
             lguFilter.addEventListener('change', filterData);
             modelFilter.addEventListener('change', filterData);
+            
+            // Add search functionality
+            const searchBox = document.getElementById('tableSearch');
+            searchBox.addEventListener('input', filterData);
+            
+            // Clear filters button
+            const clearBtn = document.getElementById('clearFilters');
+            clearBtn.addEventListener('click', () => {
+                monthFilter.value = '';
+                dateFilter.value = '';
+                lguFilter.value = '';
+                modelFilter.value = '';
+                searchBox.value = '';
+                filterData();
+            });
         }
 
         function filterData() {
@@ -662,13 +855,20 @@
             const dateValue = document.getElementById('dateFilter').value;
             const lguValue = document.getElementById('lguFilter').value;
             const modelValue = document.getElementById('modelFilter').value;
+            const searchValue = document.getElementById('tableSearch').value.toLowerCase();
 
             const filtered = allData.filter(p => {
                 const matchesMonth = !monthValue || p.prediction_date.startsWith(monthValue);
-                return matchesMonth &&
-                       (!dateValue || p.prediction_date === dateValue) &&
-                       (!lguValue || p.lgu === lguValue) &&
-                       (!modelValue || p.model_used === modelValue);
+                const matchesDate = !dateValue || p.prediction_date === dateValue;
+                const matchesLgu = !lguValue || p.lgu === lguValue;
+                const matchesModel = !modelValue || p.model_used === modelValue;
+                
+                // Search matches LGU or date
+                const matchesSearch = !searchValue || 
+                    p.lgu.toLowerCase().includes(searchValue) ||
+                    p.prediction_date.includes(searchValue);
+                
+                return matchesMonth && matchesDate && matchesLgu && matchesModel && matchesSearch;
             });
 
             displayPredictions(filtered);
@@ -679,7 +879,7 @@
             const tbody = document.getElementById('tableBody');
             
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">No predictions match the selected filters.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #666;">No predictions match the selected filters.</td></tr>';
                 return;
             }
 
@@ -696,39 +896,37 @@
                 // Parse time properly (assuming it's in HH:MM:SS format)
                 const formattedTime = p.prediction_time.substring(0, 5); // Get HH:MM
                 
-                // Format weather conditions
-                const rainfall = p.rainfall_24h !== null && p.rainfall_24h !== undefined ? p.rainfall_24h.toFixed(1) + ' mm' : 'N/A';
-                const temp = p.temp_max !== null && p.temp_max !== undefined ? p.temp_max.toFixed(1) + '°C' : 'N/A';
-                const wind = p.wind_speed !== null && p.wind_speed !== undefined ? p.wind_speed.toFixed(1) + ' km/h' : 'N/A';
+                // Validation columns
+                const predictedIcon = p.predicted_suspended ? '⛔ YES' : '✅ NO';
+                const actualIcon = p.actual_suspended === true ? '⛔ YES' : 
+                                   p.actual_suspended === false ? '✅ NO' : 
+                                   '❔ N/A';
                 
-                const weatherInfo = (p.rainfall_24h !== null || p.temp_max !== null || p.wind_speed !== null) ?
-                    `<br>Rainfall: ${rainfall}<br>Max Temp: ${temp}<br>Wind: ${wind}` :
-                    '<br><em style="color: #fbbf24;">⚠️ Weather data not saved</em>';
+                let resultCell = '';
+                if (p.prediction_correct === true) {
+                    resultCell = '<td style="background: var(--success-50); color: var(--success-700); font-weight: 600;">✅ Correct</td>';
+                } else if (p.prediction_correct === false) {
+                    resultCell = '<td style="background: var(--danger-50); color: var(--danger-700); font-weight: 600;">❌ Wrong</td>';
+                } else {
+                    resultCell = '<td style="color: var(--slate-400);">—</td>';
+                }
                 
-                const tooltipInfo = `
-                    <div class="tooltip">
-                        <strong>${p.lgu}</strong><br>
-                        Date: ${formattedDate}<br>
-                        Time: ${formattedTime}<br>
-                        Probability: ${probPercent}%<br>
-                        Model: ${p.model_used}<br>
-                        PAGASA: ${p.has_pagasa_triggers ? p.pagasa_trigger_count + ' warnings' : 'None'}${weatherInfo}
-                    </div>
-                `;
+                // PAGASA triggers
+                const pagasaCell = p.has_pagasa_triggers ? 
+                    `⚠️ ${p.typhoon_name || 'Active'}` : 
+                    '—';
                 
                 return `
                 <tr>
                     <td><strong>${formattedDate}</strong></td>
                     <td>${formattedTime}</td>
                     <td><strong>${p.lgu}</strong></td>
-                    <td class="prob-cell">
-                        ${probPercent}%
-                        ${tooltipInfo}
-                    </td>
+                    <td class="prob-cell" style="font-weight: 600; color: ${probPercent >= 50 ? 'var(--danger-600)' : 'var(--success-600)'}">${probPercent}%</td>
                     <td><span class="risk-badge risk-${p.risk_level.toLowerCase()}">${p.risk_level}</span></td>
-                    <td>${p.recommendation}</td>
-                    <td><span style="font-size: 0.8rem; color: var(--slate-500);">${p.model_used}</span></td>
-                    <td>${p.has_pagasa_triggers ? '⚠️ Yes (' + p.pagasa_trigger_count + ')' : '✅ No'}</td>
+                    <td>${predictedIcon}</td>
+                    <td>${actualIcon}</td>
+                    ${resultCell}
+                    <td style="font-size: 0.875rem;">${pagasaCell}</td>
                 </tr>
             `}).join('');
         }
@@ -767,15 +965,15 @@
                     datasets: [{
                         label: 'Average Probability',
                         data: avgProbs,
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
                         tension: 0.4,
                         fill: true
                     }, {
                         label: 'Maximum Probability',
                         data: maxProbs,
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderColor: '#6c757d',
+                        backgroundColor: 'rgba(108, 117, 125, 0.1)',
                         tension: 0.4,
                         fill: true
                     }]

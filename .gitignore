@@ -27,6 +27,11 @@ wheels/
 .ipynb_checkpoints
 *.ipynb_checkpoints/
 
+# Markdown files (except README)
+*.md
+!README.md
+!**/README.md
+
 # Environment variables
 .env
 .env.local
