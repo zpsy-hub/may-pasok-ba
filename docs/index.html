@@ -574,12 +574,20 @@
             let lastUpdatedText = '';
             try {
                 const timestamp = new Date(appState.predictionData.metadata.timestamp);
-                lastUpdatedText = `<div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.5rem;">Last updated: ${timestamp.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true})}</div>`;
+                lastUpdatedText = `<div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.75rem; font-weight: 500;">
+                    <i data-lucide="clock" style="width: 14px; height: 14px; vertical-align: middle;"></i> 
+                    Last updated: ${timestamp.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true})}
+                </div>`;
             } catch (e) {
                 // fallback - no timestamp
             }
 
             dom.dynamicGreeting.innerHTML = `${timeGreeting}${specialGreeting}<br>Here is the recommendation for tomorrow, <strong>${tomorrowFormatted}</strong>.${lastUpdatedText}`;
+            
+            // Re-initialize Lucide icons for the newly added clock icon
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         }
 
         function renderLGUDropdown() {
