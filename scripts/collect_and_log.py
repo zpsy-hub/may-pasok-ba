@@ -283,7 +283,7 @@ def calculate_rule_based_score_from_features(features: dict) -> float:
 
 def save_predictions_to_web(predictions: list, weather_features: dict):
     """Save predictions to JSON file for GitHub Pages."""
-    web_dir = PROJECT_ROOT / 'web' / 'predictions'
+    web_dir = PROJECT_ROOT / 'docs' / 'predictions'
     web_dir.mkdir(parents=True, exist_ok=True)
     
     # Prepare output data
