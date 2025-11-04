@@ -77,7 +77,7 @@ supabase_key.txt
 model-training/models/*.pkl
 model-training/models/*.joblib
 
-# Keep web prediction files for GitHub Pages
-!web/predictions/*.json
-!web/*.json
-!web/predictions_latest.json
+# Keep docs prediction files for GitHub Pages
+!docs/predictions/*.json
+!docs/*.json
+!docs/predictions_latest.json

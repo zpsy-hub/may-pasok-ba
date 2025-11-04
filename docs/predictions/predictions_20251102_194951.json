@@ -1,0 +1,127 @@
+{
+  "generated_at": "2025-11-02T19:49:51.552721",
+  "prediction_date": "2025-11-02",
+  "model_version": "v1.0.0",
+  "pagasa_status": {
+    "has_active_typhoon": 1,
+    "typhoon_name": null,
+    "tcws_level": 0,
+    "has_rainfall_warning": 0,
+    "rainfall_warning_level": 0
+  },
+  "weather": {
+    "precipitation_sum_mm": 2.247058868408203,
+    "wind_speed_max_kmh": 20.230865478515625,
+    "temperature_max_c": 30.50426483154297,
+    "humidity_mean_pct": 76.75735473632812
+  },
+  "predictions": [
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Manila",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Quezon City",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Caloocan",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Las Pi\u00f1as",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Makati",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Malabon",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Mandaluyong",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Marikina",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Muntinlupa",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Navotas",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Para\u00f1aque",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Pasay",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Pasig",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Pateros",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "San Juan",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Taguig",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    },
+    {
+      "prediction_date": "2025-11-02",
+      "lgu": "Valenzuela",
+      "suspension_probability": 0.3,
+      "predicted_suspended": false
+    }
+  ],
+  "summary": {
+    "total_lgus": 17,
+    "predicted_suspensions": 0,
+    "avg_probability": 0.3
+  }
+}
