@@ -51,19 +51,21 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(0,123,255,0.1);
+            background: white;
             color: var(--primary);
             padding: 0.75rem 1.5rem;
             border-radius: 12px;
             text-decoration: none;
             font-weight: 600;
-            border: 2px solid rgba(0,123,255,0.2);
-            transition: all 0.2s;
+            border: 2px solid #e9ecef;
+            transition: all 0.2s ease;
             margin-bottom: 2rem;
+            font-family: 'Inter', sans-serif;
         }
 
         .back-btn:hover {
-            background: rgba(0,123,255,0.15);
+            border-color: var(--primary);
+            background: #f8f9fa;
             transform: translateY(-2px);
         }
 
@@ -374,7 +376,7 @@
 </head>
 <body>
     <div class="container">
-        <a href="learn-more.html" class="back-btn">← Back to Learn More</a>
+        <a href="index.html" class="back-btn">← Back to Homepage</a>
 
         <div class="header">
             <h1>📊 Historical Prediction Logs & Performance Analysis</h1>
@@ -390,7 +392,7 @@
             <div class="info-note">
                 <strong>📌 About This Dashboard:</strong>
                 <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
-                    <li><strong>Historical Data:</strong> 1,037 predictions across 17 Metro Manila LGUs for Sept-Oct 2024</li>
+                    <li><strong>Historical Data:</strong> 1,037 predictions across 17 Metro Manila LGUs for Sept-Oct 2025</li>
                     <li><strong>Actual Outcomes:</strong> 6 suspension days validated (Sept 1, 22-26) from official DILG/LGU announcements</li>
                     <li><strong>Performance Metrics:</strong> Model accuracy: 51.1%, Precision: 67.4%, Recall: 51.7%</li>
                     <li><strong>Model Version:</strong> EasyEnsemble v1.0.0 with 33 engineered weather features</li>
@@ -449,16 +451,16 @@
                 <table id="dailySummaryTable" style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="background: var(--slate-100);">
-                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: left;">Date</th>
-                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">🟢 Normal<br>(&lt;40%)</th>
-                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">🟠 Alert<br>(40-55%)</th>
-                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">🔴 Suspension<br>(&gt;55%)</th>
-                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">Total LGUs</th>
-                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: left;">Actual Outcome</th>
-                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">🌡️ Temp<br>(°C)</th>
-                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">🌧️ Rain<br>(mm)</th>
-                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">💨 Wind<br>(km/h)</th>
-                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center;">💧 Humidity<br>(%)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: left; font-weight: 600; color: var(--text-primary);">Date</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center; font-weight: 600; color: var(--text-primary);">🟢 Normal<br>(&lt;40%)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center; font-weight: 600; color: var(--text-primary);">🟠 Alert<br>(40-55%)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center; font-weight: 600; color: var(--text-primary);">🔴 Suspension<br>(&gt;55%)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center; font-weight: 600; color: var(--text-primary);">Total LGUs</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: left; font-weight: 600; color: var(--text-primary);">Actual Outcome</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center; font-weight: 600; color: var(--text-primary);">🌡️ Temp<br>(°C)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center; font-weight: 600; color: var(--text-primary);">🌧️ Rain<br>(mm)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center; font-weight: 600; color: var(--text-primary);">💨 Wind<br>(km/h)</th>
+                            <th style="padding: 0.75rem; border: 1px solid var(--slate-200); text-align: center; font-weight: 600; color: var(--text-primary);">💧 Humidity<br>(%)</th>
                         </tr>
                     </thead>
                     <tbody id="dailySummaryBody">
@@ -575,12 +577,54 @@
                     <tr><td colspan="9" class="loading">Loading predictions...</td></tr>
                 </tbody>
             </table>
+            
+            <!-- Pagination Controls -->
+            <div id="paginationControls" style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-top: 1.5rem; padding: 1rem;">
+                <button id="firstPageBtn" class="pagination-btn" onclick="goToPage(1)">First</button>
+                <button id="prevPageBtn" class="pagination-btn" onclick="goToPage(currentPage - 1)">Previous</button>
+                <span id="pageInfo" style="color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; min-width: 250px; text-align: center;"></span>
+                <button id="nextPageBtn" class="pagination-btn" onclick="goToPage(currentPage + 1)">Next</button>
+                <button id="lastPageBtn" class="pagination-btn" onclick="goToPage(Math.ceil(filteredData.length / rowsPerPage))">Last</button>
+            </div>
         </div>
     </div>
+
+    <style>
+        .pagination-btn {
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .pagination-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: #f8f9fa;
+        }
+        
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f8f9fa;
+            color: var(--text-secondary);
+        }
+    </style>
 
     <script>
         let allData = [];
         let chart = null;
+
+        // Fix encoding issues - convert Ã± to ñ
+        function fixEncoding(text) {
+            if (!text) return text;
+            return text.replace(/Ã±/g, 'ñ');
+        }
 
         async function loadData() {
             try {
@@ -659,7 +703,7 @@
             const statsHTML = `
                 <div class="stat-card">
                     <h3 style="color: #007bff;">📊 Historical Analysis</h3>
-                    <div class="value" style="font-size: 2.5rem; color: #212529;">Sept-Oct 2024</div>
+                    <div class="value" style="font-size: 2.5rem; color: #212529;">Sept-Oct 2025</div>
                     <div class="label" style="color: #6c757d;">
                         Analyzing prediction patterns
                     </div>
@@ -674,7 +718,7 @@
                 <div class="stat-card">
                     <h3 style="color: #ffc107;">📅 Days Analyzed</h3>
                     <div class="value" style="font-size: 2.5rem; color: #212529;">${metadata.unique_dates}</div>
-                    <div class="label" style="color: #6c757d;">Complete Sept-Oct 2024 period</div>
+                    <div class="label" style="color: #6c757d;">Complete Sept-Oct 2025 period</div>
                 </div>
             `;
             document.getElementById('statsGrid').innerHTML = statsHTML;
@@ -768,14 +812,14 @@
                 return `
                     <tr style="${rowStyle}">
                         <td style="padding: 0.75rem; border: 1px solid #e9ecef; font-weight: 600; background: #f8fafb;">${formattedDate}</td>
-                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #d4edda;">
-                            <strong style="font-size: 1.25rem; color: #155724;">${group.normal}</strong>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #d4edda; font-size: 1rem; color: #155724;">
+                            ${group.normal}
                         </td>
-                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #fff3cd;">
-                            <strong style="font-size: 1.25rem; color: #856404;">${group.alert}</strong>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #fff3cd; font-size: 1rem; color: #856404;">
+                            ${group.alert}
                         </td>
-                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #f8d7da;">
-                            <strong style="font-size: 1.25rem; color: #721c24;">${group.suspension}</strong>
+                        <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; background: #f8d7da; font-size: 1rem; color: #721c24;">
+                            ${group.suspension}
                         </td>
                         <td style="padding: 0.75rem; border: 1px solid #e9ecef; text-align: center; font-weight: 600; background: #e8f4ff;">
                             ${group.total}
@@ -816,7 +860,7 @@
             lgus.forEach(lgu => {
                 const option = document.createElement('option');
                 option.value = lgu;
-                option.textContent = lgu;
+                option.textContent = fixEncoding(lgu);
                 lguFilter.appendChild(option);
             });
 
@@ -875,15 +919,33 @@
             createChart(filtered);
         }
 
+        // Pagination state
+        let currentPage = 1;
+        const rowsPerPage = 50; // Show 50 rows per page to avoid endless scrolling
+        let filteredData = [];
+
         function displayPredictions(data) {
+            filteredData = data; // Store for pagination
+            currentPage = 1; // Reset to first page
+            renderPage();
+        }
+
+        function renderPage() {
             const tbody = document.getElementById('tableBody');
+            const data = filteredData;
             
             if (data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #666;">No predictions match the selected filters.</td></tr>';
+                updatePaginationControls(0);
                 return;
             }
 
-            tbody.innerHTML = data.map(p => {
+            // Calculate pagination
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageData = data.slice(start, end);
+
+            tbody.innerHTML = pageData.map(p => {
                 const probPercent = (p.suspension_probability * 100).toFixed(2);
                 
                 // Parse dates properly
@@ -920,7 +982,7 @@
                 <tr>
                     <td><strong>${formattedDate}</strong></td>
                     <td>${formattedTime}</td>
-                    <td><strong>${p.lgu}</strong></td>
+                    <td><strong>${fixEncoding(p.lgu)}</strong></td>
                     <td class="prob-cell" style="font-weight: 600; color: ${probPercent >= 50 ? 'var(--danger-600)' : 'var(--success-600)'}">${probPercent}%</td>
                     <td><span class="risk-badge risk-${p.risk_level.toLowerCase()}">${p.risk_level}</span></td>
                     <td>${predictedIcon}</td>
@@ -929,6 +991,42 @@
                     <td style="font-size: 0.875rem;">${pagasaCell}</td>
                 </tr>
             `}).join('');
+            
+            updatePaginationControls(data.length);
+            
+            // Scroll to top of table on page change
+            const tableElement = document.getElementById('predictionsTable');
+            if (tableElement) {
+                tableElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function updatePaginationControls(totalItems) {
+            const totalPages = Math.ceil(totalItems / rowsPerPage);
+            const paginationDiv = document.getElementById('paginationControls');
+            
+            if (totalPages <= 1) {
+                paginationDiv.style.display = 'none';
+                return;
+            }
+            
+            paginationDiv.style.display = 'flex';
+            
+            let html = `
+                <button class="pagination-btn" onclick="goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>First</button>
+                <button class="pagination-btn" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Previous</button>
+                <span style="color: var(--text-secondary); font-size: 0.875rem; font-weight: 500; margin: 0 0.5rem;">Page ${currentPage} of ${totalPages}</span>
+                <button class="pagination-btn" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>
+                <button class="pagination-btn" onclick="goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>Last</button>
+                <span style="color: var(--text-secondary); font-size: 0.875rem; margin-left: 1rem;">Showing ${((currentPage - 1) * rowsPerPage) + 1}-${Math.min(currentPage * rowsPerPage, totalItems)} of ${totalItems} predictions</span>
+            `;
+            
+            paginationDiv.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderPage();
         }
 
         function createChart(data) {

@@ -24,7 +24,7 @@ Predicts class suspensions based on weather conditions, PAGASA warnings, and his
 ## 🚀 Quick Links
 
 - **🌐 Live Dashboard**: [https://zpsy-hub.github.io/may-pasok-ba/](https://zpsy-hub.github.io/may-pasok-ba/)
-- **📊 Latest Predictions**: [web/predictions/latest.json](web/predictions/latest.json)
+- **📊 Latest Predictions**: [docs/predictions/latest.json](docs/predictions/latest.json)
 - **📚 Documentation**: See folders below
 
 ---

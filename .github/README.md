@@ -20,7 +20,7 @@ This directory contains automated workflows that power the **May Pasok Ba?** pre
    - Generates ML predictions for 17 LGUs
    - Logs all data to Supabase database
 5. ✅ **Verify predictions** - Ensures JSON was generated
-6. ✅ **Commit predictions** - Updates `web/predictions/*.json`
+6. ✅ **Commit predictions** - Updates `docs/predictions/*.json`
 7. ✅ **Deploy to GitHub Pages** - Publishes to live site
 8. ✅ **Summary report** - Shows prediction stats
 
@@ -30,8 +30,8 @@ This directory contains automated workflows that power the **May Pasok Ba?** pre
 - `github.run_id` - Unique identifier for tracking
 
 #### Output Files:
-- `web/predictions/latest.json` - Current predictions (17 LGUs)
-- `web/predictions/predictions_YYYYMMDD_HHMMSS.json` - Timestamped backup
+- `docs/predictions/latest.json` - Current predictions (17 LGUs)
+- `docs/predictions/predictions_YYYYMMDD_HHMMSS.json` - Timestamped backup
 - `weather_data/realtime_features_YYYYMMDD_HHMMSS.json` - Raw weather data
 
 #### Database Tables Updated:
@@ -261,3 +261,4 @@ Average Risk: 31.0%
 **Automation Status**: 🟢 Active  
 **Last Updated**: November 2, 2025  
 **Next Scheduled Run**: Check Actions tab for countdown
+
