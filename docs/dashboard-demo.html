@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Demo - Interface States</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .demo-header {
+            text-align: center;
+            color: #1e5fa8;
+            margin-bottom: 2rem;
+        }
+        .demo-header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+        .demo-controls {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .scenario-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .scenario-btn {
+            padding: 1.5rem 1rem;
+            border-radius: 16px;
+            border: 3px solid #e9ecef;
+            background: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .scenario-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .scenario-btn.active {
+            border-color: #007bff;
+            background: #e7f3ff;
+            color: #004085;
+        }
+        .scenario-btn.green { border-color: #10b981; }
+        .scenario-btn.green.active { background: #d1fae5; border-color: #10b981; color: #065f46; }
+        .scenario-btn.orange { border-color: #f59e0b; }
+        .scenario-btn.orange.active { background: #fed7aa; border-color: #f59e0b; color: #92400e; }
+        .scenario-btn.red { border-color: #ef4444; }
+        .scenario-btn.red.active { background: #fecaca; border-color: #ef4444; color: #991b1b; }
+        .scenario-btn.metro { border-color: #007bff; }
+        .scenario-btn.metro.active { background: #e7f3ff; border-color: #007bff; color: #004085; }
+        
+        .auto-cycle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        .auto-cycle button {
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            border: 2px solid #007bff;
+            background: #007bff;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .auto-cycle button:hover {
+            background: #0056b3;
+        }
+        .auto-cycle button.stop {
+            background: #dc3545;
+            border-color: #dc3545;
+        }
+        .auto-cycle button.stop:hover {
+            background: #bb2d3b;
+        }
+        .cycle-status {
+            font-weight: 600;
+            color: #6c757d;
+        }
+        
+        .dashboard-frame {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: all 0.5s ease;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Prediction Card Styles - Match index.html */
+        .prediction-card {
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            border-radius: 24px;
+            transition: all 0.5s ease;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        .prediction-card.bg-classes-expected { background: linear-gradient(135deg, #d4edda, #f8f9fa); }
+        .prediction-card.bg-monitor { background: linear-gradient(135deg, #fff3cd, #f8f9fa); }
+        .prediction-card.bg-suspend { background: linear-gradient(135deg, #f8d7da, #f8f9fa); }
+        
+        .recommendation-badge {
+            display: inline-block;
+            padding: 0.6rem 2rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 2rem;
+        }
+        .recommendation-badge.classes-expected { background: #d4edda; color: #155724; }
+        .recommendation-badge.monitor { background: #fff3cd; color: #856404; }
+        .recommendation-badge.suspend { background: #f8d7da; color: #721c24; }
+        
+        .weather-box {
+            border-left: 3px solid;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .weather-box.green {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: #4caf50;
+        }
+        .weather-box.orange {
+            background: rgba(255, 152, 0, 0.1);
+            border-color: #ff9800;
+        }
+        .weather-box.red {
+            background: rgba(244, 67, 54, 0.1);
+            border-color: #f44336;
+        }
+        .weather-box-title {
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 0.5rem;
+        }
+        .weather-box-text {
+            color: #666;
+        }
+        
+        .weather-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid rgba(0,0,0,0.06);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        .metric-item {
+            text-align: center;
+        }
+        .metric-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .metric-value {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: #212529;
+        }
+        .metric-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            opacity: 0.8;
+        }
+        
+        .info-box {
+            margin-bottom: 2rem;
+            padding: 1.25rem;
+            background: rgba(0,0,0,0.03);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: #6c757d;
+            line-height: 1.7;
+            text-align: left;
+        }
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #212529;
+            font-size: 1.05rem;
+        }
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .info-box li {
+            margin-bottom: 0.35rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .dashboard-frame.animate {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🎨 Dashboard Interface Demo</h1>
+            <p style="font-size: 1.2rem; opacity: 0.95;">See how the interface changes with different weather scenarios</p>
+        </div>
+        
+        <div class="demo-controls">
+            <h2 style="margin-bottom: 1.5rem; font-weight: 700;">Select Scenario</h2>
+            <div class="scenario-buttons">
+                <button class="scenario-btn metro" onclick="loadScenario('metro_all_green')">
+                    🟢 Metro Manila: All Clear<br>
+                    <small style="font-weight: 400;">100% Normal</small>
+                </button>
+                <button class="scenario-btn metro" onclick="loadScenario('metro_moderate')">
+                    🟠 Metro Manila: Moderate Alert<br>
+                    <small style="font-weight: 400;">82% Moderate</small>
+                </button>
+                <button class="scenario-btn metro" onclick="loadScenario('metro_severe')">
+                    🔴 Metro Manila: Severe Alert<br>
+                    <small style="font-weight: 400;">100% High Risk</small>
+                </button>
+                <button class="scenario-btn metro" onclick="loadScenario('metro_mixed_exception')">
+                    🟢🟠 Metro Manila: Mostly Clear<br>
+                    <small style="font-weight: 400;">18% Moderate</small>
+                </button>
+                <button class="scenario-btn metro" onclick="loadScenario('metro_typhoon')">
+                    🔴🌀 Metro Manila: Typhoon<br>
+                    <small style="font-weight: 400;">76% High Risk</small>
+                </button>
+                <button class="scenario-btn green" onclick="loadScenario('green')">
+                    🟢 All Clear<br>
+                    <small style="font-weight: 400;">Normal Weather</small>
+                </button>
+                <button class="scenario-btn orange" onclick="loadScenario('orange')">
+                    🟠 Moderate Alert<br>
+                    <small style="font-weight: 400;">Enhanced Monsoon</small>
+                </button>
+                <button class="scenario-btn red" onclick="loadScenario('red')">
+                    🔴 Severe Alert<br>
+                    <small style="font-weight: 400;">Typhoon Warning</small>
+                </button>
+                <button class="scenario-btn orange green" onclick="loadScenario('mixed1')">
+                    🟠🟢 Mixed 1<br>
+                    <small style="font-weight: 400;">Localized Conditions</small>
+                </button>
+                <button class="scenario-btn red orange" onclick="loadScenario('mixed2')">
+                    🔴🟠 Mixed 2<br>
+                    <small style="font-weight: 400;">Approaching Typhoon</small>
+                </button>
+            </div>
+            
+            <div class="auto-cycle">
+                <button id="autoCycleBtn" onclick="toggleAutoCycle()">▶ Start Auto Cycle</button>
+                <span class="cycle-status" id="cycleStatus">Click to see scenarios automatically</span>
+            </div>
+        </div>
+        
+        <div class="dashboard-frame" id="dashboardFrame">
+            <div class="prediction-card bg-classes-expected" id="predictionCard">
+                <!-- Content will be dynamically generated -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const scenarios = {
+            metro_all_green: {
+                isMetro: true,
+                metroTitle: 'NORMAL CONDITIONS',
+                tierEmoji: '🟢',
+                distribution: 'All 17 LGUs report low risk',
+                exception: null,
+                cardClass: 'bg-classes-expected',
+                typhoon: null,
+                stats: {
+                    green: 17,
+                    orange: 0,
+                    red: 0
+                }
+            },
+            metro_moderate: {
+                isMetro: true,
+                metroTitle: 'WIDESPREAD ALERT',
+                tierEmoji: '⚠️',
+                distribution: 'Most NCR LGUs under weather alert',
+                exception: '3 LGUs remain normal',
+                cardClass: 'bg-monitor',
+                typhoon: null,
+                stats: {
+                    green: 3,
+                    orange: 14,
+                    red: 0
+                }
+            },
+            metro_severe: {
+                isMetro: true,
+                metroTitle: 'METRO-WIDE EMERGENCY',
+                tierEmoji: '⛔⛔⛔',
+                distribution: 'ALL 17 LGUs UNDER HIGH RISK',
+                exception: null,
+                cardClass: 'bg-suspend',
+                typhoon: 'PEPITO (MAN-YI)',
+                typhoonLevel: 'TCWS #3',
+                stats: {
+                    green: 0,
+                    orange: 0,
+                    red: 17
+                }
+            },
+            metro_mixed_exception: {
+                isMetro: true,
+                metroTitle: 'REGIONAL ALERT',
+                tierEmoji: '🟠',
+                distribution: 'Weather affecting parts of NCR',
+                exception: 'Most LGUs normal (14 safe). High-risk areas: Northern Metro Manila',
+                cardClass: 'bg-classes-expected',
+                typhoon: null,
+                stats: {
+                    green: 14,
+                    orange: 3,
+                    red: 0
+                }
+            },
+            metro_typhoon: {
+                isMetro: true,
+                metroTitle: 'WIDESPREAD HIGH RISK',
+                tierEmoji: '⛔',
+                distribution: 'Severe weather affecting most of NCR',
+                exception: '4 LGUs less affected',
+                cardClass: 'bg-suspend',
+                typhoon: 'ROSING (TALIM)',
+                typhoonLevel: 'TCWS #2',
+                stats: {
+                    green: 0,
+                    orange: 4,
+                    red: 13
+                }
+            },
+            green: {
+                lgu: 'Manila',
+                tier: 'GREEN',
+                tierEmoji: '🟢',
+                tierTitle: 'NORMAL',
+                cardClass: 'bg-classes-expected',
+                weatherDesc: '☀️ Fair Weather Expected',
+                weatherBoxClass: 'green',
+                weatherText: 'Minimal rain with light winds. Humidity is moderate. Normal weather conditions.',
+                typhoon: null,
+                pagasaAdvisory: null,
+                rainfall: 5.2,
+                wind: 15,
+                temp: 29.3,
+                humidity: 68,
+                actions: [
+                    'Proceed with normal school operations',
+                    'Continue routine weather monitoring'
+                ],
+                nearbyLgus: 'Quezon City 🟢 | Makati 🟢 | Pasay 🟢'
+            },
+            orange: {
+                lgu: 'Quezon City',
+                tier: 'ORANGE',
+                tierEmoji: '🟠',
+                tierTitle: 'ALERT',
+                cardClass: 'bg-monitor',
+                weatherDesc: '🌧️ Heavy Rain Expected',
+                weatherBoxClass: 'orange',
+                weatherText: 'Moderate rain with moderate winds. Humidity is very high. Conditions may worsen.',
+                typhoon: null,
+                pagasaAdvisory: '🟠 PAGASA Orange Rainfall Advisory',
+                pagasaText: 'Heavy rainfall expected. Monitor PAGASA for updates.',
+                rainfall: 45.8,
+                wind: 35,
+                temp: 27.1,
+                humidity: 82,
+                actions: [
+                    'Check school announcements by 6 PM today',
+                    'Stay updated on weather and flood warnings',
+                    'Have emergency contacts ready'
+                ],
+                nearbyLgus: 'Manila 🟠 | Caloocan 🟠 | San Juan 🟠'
+            },
+            red: {
+                lgu: 'Marikina',
+                tier: 'RED',
+                tierEmoji: '🔴',
+                tierTitle: 'HIGH RISK',
+                cardClass: 'bg-suspend',
+                weatherDesc: '🌊 Severe Weather Expected',
+                weatherBoxClass: 'red',
+                weatherText: 'Very heavy rain with very strong winds. Humidity is extremely high. Flooding expected in low-lying areas.',
+                typhoon: {
+                    isDirect: true,
+                    name: 'PEPITO',
+                    tcws: 3,
+                    message: '<strong>PEPITO</strong> is affecting Metro Manila (TCWS #3). Stay alert and monitor PAGASA updates.'
+                },
+                pagasaAdvisory: '🔴 PAGASA Red Rainfall Warning',
+                pagasaText: 'Heavy rainfall expected. Monitor PAGASA for updates.',
+                rainfall: 120.5,
+                wind: 89,
+                temp: 24.2,
+                humidity: 95,
+                actions: [
+                    'Class suspension STRONGLY RECOMMENDED',
+                    'Avoid flood-prone areas',
+                    'Monitor emergency announcements closely'
+                ],
+                nearbyLgus: 'Pasig 🔴 | San Mateo 🔴 | Antipolo 🔴',
+                emergency: true
+            },
+            mixed1: {
+                lgu: 'Pasig',
+                tier: 'ORANGE',
+                tierEmoji: '🟠',
+                tierTitle: 'ALERT',
+                cardClass: 'bg-monitor',
+                weatherDesc: '🌧️ Heavy Rain Expected',
+                weatherBoxClass: 'orange',
+                weatherText: 'Moderate rain with moderate winds. Humidity is high. Conditions may worsen.',
+                typhoon: null,
+                pagasaAdvisory: '🟡 PAGASA Yellow Rainfall Advisory',
+                pagasaText: 'Heavy rainfall expected. Monitor PAGASA for updates.',
+                rainfall: 35.3,
+                wind: 28,
+                temp: 28.5,
+                humidity: 75,
+                actions: [
+                    'Check school announcements by 6 PM today',
+                    'Stay updated on weather and flood warnings',
+                    'Have emergency contacts ready'
+                ],
+                nearbyLgus: 'Mandaluyong 🟢 | Taguig 🟢 | Makati 🟢'
+            },
+            mixed2: {
+                lgu: 'Navotas',
+                tier: 'RED',
+                tierEmoji: '🔴',
+                tierTitle: 'HIGH RISK',
+                cardClass: 'bg-suspend',
+                weatherDesc: '🌊 Severe Weather Expected',
+                weatherBoxClass: 'red',
+                weatherText: 'Heavy rain with strong winds. Humidity is extremely high. Severe weather conditions developing.',
+                typhoon: {
+                    isDirect: false,
+                    name: 'PEPITO',
+                    tcws: 2,
+                    message: '<strong>PEPITO</strong> is being monitored in the region. Stay alert and monitor PAGASA updates.'
+                },
+                pagasaAdvisory: '🔴 PAGASA Red Rainfall Warning',
+                pagasaText: 'Heavy rainfall expected. Monitor PAGASA for updates.',
+                rainfall: 95.7,
+                wind: 72,
+                temp: 25.8,
+                humidity: 88,
+                actions: [
+                    'Class suspension STRONGLY RECOMMENDED',
+                    'Avoid flood-prone areas',
+                    'Monitor emergency announcements closely'
+                ],
+                nearbyLgus: 'Malabon 🔴 | Valenzuela 🔴 | Caloocan 🔴',
+                emergency: true
+            }
+        };
+        
+        let currentScenario = 'green';
+        let autoCycleInterval = null;
+        let isAutoCycling = false;
+        
+        function loadScenario(scenarioKey) {
+            currentScenario = scenarioKey;
+            const scenario = scenarios[scenarioKey];
+            
+            // Add animation
+            const frame = document.getElementById('dashboardFrame');
+            frame.classList.remove('animate');
+            void frame.offsetWidth; // Trigger reflow
+            frame.classList.add('animate');
+            
+            // Check if this is a Metro Manila overview scenario
+            if (scenario.isMetro) {
+                // Render Metro Manila overview (matching index.html design)
+                frame.innerHTML = `
+                    <div class="prediction-card ${scenario.cardClass}">
+                        <h2 style="font-size: 2rem; font-weight: 700; color: #212529; margin: 0 0 1.5rem 0; text-align: center;">
+                            Metro Manila
+                        </h2>
+                        <div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">${scenario.tierEmoji}</div>
+                        <div class="recommendation-badge ${scenario.cardClass.replace('bg-', '')}" style="margin-bottom: 1rem;">${scenario.tierEmoji} ${scenario.metroTitle.split(':')[1]?.trim() || scenario.metroTitle}</div>
+                        <p style="font-size: 1.1rem; color: #495057; margin-bottom: 1.5rem; text-align: center; font-weight: 500;">${scenario.distribution}</p>
+                        
+                        <div style="margin: 1.5rem 0; font-size: 0.95rem; color: #6c757d;">
+                            <div style="font-weight: 600; margin-bottom: 0.75rem; text-align: center;">� Risk Distribution:</div>
+                            <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; font-size: 0.9rem;">
+                                <span style="font-weight: 500;">🔴 High Risk: ${scenario.stats.red} LGUs (${Math.round(scenario.stats.red*100/17)}%)</span>
+                                <span style="font-weight: 500;">🟠 Moderate Risk: ${scenario.stats.orange} LGUs (${Math.round(scenario.stats.orange*100/17)}%)</span>
+                                <span style="font-weight: 500;">🟢 Low Risk: ${scenario.stats.green} LGUs (${Math.round(scenario.stats.green*100/17)}%)</span>
+                            </div>
+                        </div>
+                        
+                        ${scenario.exception ? `
+                            <div style="margin-top: 1.5rem; padding: 1rem 1.5rem; background: rgba(0,0,0,0.05); border-radius: 12px; font-size: 0.9rem; line-height: 1.6;">
+                                <div style="font-weight: 600; margin-bottom: 0.25rem;">ℹ️ EXCEPTION:</div>
+                                <div>${scenario.exception}</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${scenario.typhoon ? `
+                            <div style="background: rgba(220, 53, 69, 0.15); border-left: 3px solid #dc3545; padding: 1rem 1.25rem; border-radius: 8px; margin-top: 2rem;">
+                                <div style="font-weight: 600; color: #212529; margin-bottom: 0.5rem; font-size: 1rem;">� TYPHOON WARNING:</div>
+                                <div style="color: #666; font-size: 1rem; line-height: 1.6;">
+                                    <strong>${scenario.typhoon}</strong> is affecting Metro Manila (${scenario.typhoonLevel}). Stay alert and monitor PAGASA updates.
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.03); border-radius: 12px; font-size: 0.9rem; color: #6c757d; text-align: center;">
+                            💡 Select your specific LGU from the dropdown above to see detailed hourly forecast
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Build typhoon warning HTML (for individual LGU scenarios)
+            let typhoonHTML = '';
+            if (scenario.typhoon) {
+                const bgColor = scenario.typhoon.isDirect ? 'rgba(220, 53, 69, 0.15)' : 'rgba(255, 193, 7, 0.15)';
+                const borderColor = scenario.typhoon.isDirect ? '#dc3545' : '#ffc107';
+                const warningType = scenario.typhoon.isDirect ? 'TYPHOON WARNING' : 'TYPHOON ALERT';
+                
+                typhoonHTML = `
+                    <div style="background: ${bgColor}; border-left: 3px solid ${borderColor}; padding: 1rem 1.25rem; border-radius: 8px; margin-bottom: 2rem; text-align: left;">
+                        <div style="font-weight: 600; color: #212529; margin-bottom: 0.5rem; font-size: 1rem;">🌀 ${warningType}:</div>
+                        <div style="color: #666; font-size: 1rem; line-height: 1.6;">
+                            ${scenario.typhoon.message}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Build PAGASA advisory HTML
+            let pagasaHTML = '';
+            if (scenario.pagasaAdvisory) {
+                const bgColor = scenario.pagasaAdvisory.includes('Red') ? 'rgba(220, 53, 69, 0.15)' : 
+                               scenario.pagasaAdvisory.includes('Orange') ? 'rgba(255, 152, 0, 0.15)' : 
+                               'rgba(255, 193, 7, 0.15)';
+                const borderColor = scenario.pagasaAdvisory.includes('Red') ? '#dc3545' : 
+                                   scenario.pagasaAdvisory.includes('Orange') ? '#ff9800' : '#ffc107';
+                
+                pagasaHTML = `
+                    <div style="margin-bottom: 2rem; padding: 1rem 1.25rem; background: ${bgColor}; border-left: 3px solid ${borderColor}; border-radius: 8px; font-size: 1rem; font-weight: 600; color: #212529; text-align: left;">
+                        <div style="margin-bottom: 0.25rem;">${scenario.pagasaAdvisory}</div>
+                        <div style="font-size: 0.9rem; font-weight: 400; color: #666; margin-top: 0.5rem;">${scenario.pagasaText}</div>
+                    </div>
+                `;
+            }
+            
+            // Build emergency section
+            let emergencyHTML = '';
+            if (scenario.emergency) {
+                emergencyHTML = `
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(220, 53, 69, 0.1); border-radius: 8px; text-align: left;">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">🚨 Emergency Contacts:</div>
+                        <div style="font-size: 0.9rem; color: #6c757d;">
+                            NDRRMC: 911 | Local DRRM Office
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Build main card HTML
+            const card = document.getElementById('predictionCard');
+            card.className = `prediction-card ${scenario.cardClass}`;
+            card.innerHTML = `
+                <h2 style="font-size: 2.25rem; font-weight: 700; color: #212529; margin: 0 0 1.5rem 0; text-align: center;">
+                    ${scenario.lgu}
+                </h2>
+                ${scenario.tier === 'ORANGE' || scenario.tier === 'RED' ? '<div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">⚠️</div>' : ''}
+                <div class="recommendation-badge ${scenario.cardClass.replace('bg-', '')}" style="margin-bottom: 2rem;">${scenario.tierEmoji} ${scenario.tierTitle}</div>
+                
+                ${typhoonHTML}
+                
+                <div class="weather-box ${scenario.weatherBoxClass}">
+                    <div class="weather-box-title">🌤️ Weather Conditions:</div>
+                    <div class="weather-box-text">${scenario.weatherText}</div>
+                </div>
+                
+                <div class="weather-metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-emoji">🌧️</div>
+                        <div class="metric-value">${scenario.rainfall.toFixed(1)}mm</div>
+                        <div class="metric-label">Rainfall</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-emoji">💨</div>
+                        <div class="metric-value">${scenario.wind} km/h</div>
+                        <div class="metric-label">Wind</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-emoji">🌡️</div>
+                        <div class="metric-value">${scenario.temp.toFixed(1)}°C</div>
+                        <div class="metric-label">Temp</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-emoji">💧</div>
+                        <div class="metric-value">${scenario.humidity}%</div>
+                        <div class="metric-label">Humidity</div>
+                    </div>
+                </div>
+                
+                ${pagasaHTML}
+                
+                <div class="info-box">
+                    <div class="info-box-title">${scenario.tier === 'RED' ? '⛔' : scenario.tier === 'ORANGE' ? '⚠️' : '✓'} RECOMMENDATION:</div>
+                    <ul>
+                        ${scenario.actions.map(action => `<li>• ${action}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="info-box">
+                    <div class="info-box-title">📱 Get Updates:</div>
+                    <ul>
+                        <li>• ${scenario.lgu} LGU Facebook/Website</li>
+                        <li>• PAGASA Weather Updates</li>
+                        <li>• DepEd-NCR Announcements</li>
+                    </ul>
+                </div>
+                
+                <div class="info-box" style="margin-bottom: 0;">
+                    <div class="info-box-title">📍 Nearby LGUs:</div>
+                    ${scenario.nearbyLgus}
+                </div>
+                
+                ${emergencyHTML}
+            `;
+            
+            // Update active button
+            document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
+            event?.target?.closest('.scenario-btn')?.classList.add('active');
+        }
+        
+        function toggleAutoCycle() {
+            const btn = document.getElementById('autoCycleBtn');
+            const status = document.getElementById('cycleStatus');
+            
+            if (isAutoCycling) {
+                // Stop cycling
+                clearInterval(autoCycleInterval);
+                isAutoCycling = false;
+                btn.textContent = '▶ Start Auto Cycle';
+                btn.classList.remove('stop');
+                status.textContent = 'Click to see scenarios automatically';
+            } else {
+                // Start cycling
+                isAutoCycling = true;
+                btn.textContent = '⏸ Stop Auto Cycle';
+                btn.classList.add('stop');
+                
+                const scenarioKeys = Object.keys(scenarios);
+                let index = 0;
+                
+                autoCycleInterval = setInterval(() => {
+                    loadScenario(scenarioKeys[index]);
+                    const displayName = scenarios[scenarioKeys[index]].isMetro 
+                        ? scenarios[scenarioKeys[index]].metroTitle 
+                        : scenarios[scenarioKeys[index]].lgu;
+                    status.textContent = `Showing: ${displayName} (${index + 1}/${scenarioKeys.length})`;
+                    index = (index + 1) % scenarioKeys.length;
+                }, 3000); // Change every 3 seconds
+                
+                // Load first scenario immediately
+                loadScenario(scenarioKeys[0]);
+                const firstDisplay = scenarios[scenarioKeys[0]].isMetro 
+                    ? scenarios[scenarioKeys[0]].metroTitle 
+                    : scenarios[scenarioKeys[0]].lgu;
+                status.textContent = `Showing: ${firstDisplay} (1/${scenarioKeys.length})`;
+            }
+        }
+        
+        // Initialize with first Metro Manila scenario
+        loadScenario('metro_all_green');
+        lucide.createIcons();
+    </script>
+</body>
+</html>

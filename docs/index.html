@@ -185,6 +185,7 @@
         .header-icon { font-size: 2rem; margin-bottom: 0.25rem; }
         .header-temp { font-size: 0.85rem; font-weight: 600; color: #6c757d; }
         .hour-header.active .header-temp { color: #004085; }
+        .hour-header .hour-time { display: none; } /* Hide time in desktop header, shown in footer */
         .chart-body { position: relative; height: 240px; margin: 2rem 0; }
         .bars-container { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; height: 100%; align-items: flex-end; }
         .rainfall-column { position: relative; display: flex; flex-direction: column; justify-content: flex-end; cursor: pointer; transition: all 0.3s ease; }
@@ -210,10 +211,56 @@
 
         @media (max-width: 768px) {
             .key-hours { grid-template-columns: 1fr; }
-            .chart-header, .bars-container, .chart-footer { grid-template-columns: repeat(6, 1fr); }
-            .hour-header { padding: 0.4rem 0.2rem; }
-            .header-icon { font-size: 1.2rem; }
-            .header-temp { font-size: 0.7rem; }
+            
+            /* Make rain chart vertical on mobile */
+            .chart-container { padding: 1rem; }
+            .chart-header { 
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                margin-bottom: 0;
+            }
+            .hour-header { 
+                display: grid;
+                grid-template-columns: 50px 1fr 70px 80px;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 0.75rem 1rem;
+                text-align: left;
+            }
+            .header-icon { 
+                font-size: 1.8rem; 
+                margin-bottom: 0;
+            }
+            .hour-header .hour-time {
+                display: block !important;
+                text-align: left;
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: #495057;
+            }
+            .header-temp { 
+                font-size: 0.9rem;
+                text-align: right;
+                font-weight: 600;
+            }
+            
+            .chart-body {
+                display: none; /* Hide the bar chart on mobile */
+            }
+            
+            .chart-footer {
+                display: none; /* Hide footer labels on mobile since time is in header */
+            }
+            
+            /* Show rain data in header on mobile */
+            .hour-header::after {
+                content: attr(data-rain);
+                font-size: 0.85rem;
+                font-weight: 700;
+                color: #007bff;
+                text-align: right;
+            }
         }
     </style>
 </head>
@@ -1461,8 +1508,9 @@
             
             // Render header
             header.innerHTML = chartData.map((data, i) => `
-                <div class="hour-header" data-index="${i}" style="background: ${getTempGradient(data.temp)}">
+                <div class="hour-header" data-index="${i}" data-rain="${data.rainfall.toFixed(1)}mm" style="background: ${getTempGradient(data.temp)}">
                     <div class="header-icon">${data.icon}</div>
+                    <div class="hour-time">${data.dayNightEmoji} ${data.time}</div>
                     <div class="header-temp">${data.temp}°C</div>
                 </div>
             `).join('');
