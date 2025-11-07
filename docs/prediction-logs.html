@@ -563,7 +563,6 @@
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Time</th>
                         <th>LGU</th>
                         <th>Probability</th>
                         <th>Risk Level</th>
@@ -574,7 +573,7 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    <tr><td colspan="9" class="loading">Loading predictions...</td></tr>
+                    <tr><td colspan="8" class="loading">Loading predictions...</td></tr>
                 </tbody>
             </table>
             
@@ -935,7 +934,7 @@
             const data = filteredData;
             
             if (data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #666;">No predictions match the selected filters.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">No predictions match the selected filters.</td></tr>';
                 updatePaginationControls(0);
                 return;
             }
@@ -951,12 +950,11 @@
                 // Parse dates properly
                 const predDate = new Date(p.prediction_date + 'T00:00:00');
                 const formattedDate = predDate.toLocaleDateString('en-US', { 
+                    weekday: 'short',
                     month: 'short', 
-                    day: 'numeric'
+                    day: 'numeric',
+                    year: 'numeric'
                 });
-                
-                // Parse time properly (assuming it's in HH:MM:SS format)
-                const formattedTime = p.prediction_time.substring(0, 5); // Get HH:MM
                 
                 // Validation columns
                 const predictedIcon = p.predicted_suspended ? '⛔ YES' : '✅ NO';
@@ -974,17 +972,20 @@
                 }
                 
                 // PAGASA triggers
-                const pagasaCell = p.has_pagasa_triggers ? 
-                    `⚠️ ${p.typhoon_name || 'Active'}` : 
-                    '—';
+                const pagasaCell = p.pagasa_context?.has_active_typhoon ? 
+                    `⚠️ ${p.pagasa_context.typhoon_name || 'Active'}` : 
+                    (p.pagasa_context?.rainfall_warning && p.pagasa_context.rainfall_warning !== 'NONE' ? 
+                        `🌧️ ${p.pagasa_context.rainfall_warning}` : '—');
+                
+                // Get risk level from tier
+                const riskLevel = p.risk_tier?.tier || 'normal';
                 
                 return `
                 <tr>
                     <td><strong>${formattedDate}</strong></td>
-                    <td>${formattedTime}</td>
                     <td><strong>${fixEncoding(p.lgu)}</strong></td>
                     <td class="prob-cell" style="font-weight: 600; color: ${probPercent >= 50 ? 'var(--danger-600)' : 'var(--success-600)'}">${probPercent}%</td>
-                    <td><span class="risk-badge risk-${p.risk_level.toLowerCase()}">${p.risk_level}</span></td>
+                    <td><span class="risk-badge risk-${riskLevel.toLowerCase()}">${riskLevel.toUpperCase()}</span></td>
                     <td>${predictedIcon}</td>
                     <td>${actualIcon}</td>
                     ${resultCell}
