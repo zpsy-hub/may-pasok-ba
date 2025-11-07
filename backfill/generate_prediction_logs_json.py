@@ -13,8 +13,34 @@ with open('output/predictions_sept_oct.json', 'r') as f:
 with open('output/performance_analysis.json', 'r') as f:
     performance = json.load(f)
 
+# Load actual suspensions
+with open('actual_suspensions_sept_oct.json', 'r') as f:
+    actual_data = json.load(f)
+
+# Create a set of (date, lgu) tuples for actual suspensions
+actual_suspensions = set()
+for suspension in actual_data.get('suspensions', []):
+    date = suspension['date']
+    for lgu, details in suspension.get('suspension_details', {}).items():
+        if details.get('suspended', False):
+            actual_suspensions.add((date, lgu))
+
 predictions = predictions_data['predictions']
 metadata = predictions_data['metadata']
+
+# Add validation fields to each prediction
+for p in predictions:
+    date = p['prediction_date']
+    lgu = p['lgu']
+    predicted = p['predicted_suspended']
+    actual = (date, lgu) in actual_suspensions
+    
+    # Add validation fields
+    p['actual_suspended'] = actual if (date, lgu) in actual_suspensions or any(s['date'] == date for s in actual_data.get('suspensions', [])) else None
+    if p['actual_suspended'] is not None:
+        p['prediction_correct'] = (predicted == actual)
+    else:
+        p['prediction_correct'] = None
 
 # Calculate statistics
 total_predictions = len(predictions)
