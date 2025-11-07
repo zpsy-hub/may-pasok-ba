@@ -1,0 +1,321 @@
+name: Hourly Prediction Pipeline
+
+on:
+  schedule:
+    # Run every hour at minute 5
+    - cron: '5 * * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  collect-and-predict:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install Python dependencies
+        id: install-python
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          echo "status=success" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Install Node.js dependencies
+        id: install-node
+        run: |
+          cd nodejs-pagasa
+          npm install
+          echo "status=success" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Verify ML Model Exists
+        id: verify-model
+        run: |
+          if [ -f "model-training/data/processed/best_core_model.pkl" ]; then
+            echo "✅ EasyEnsemble model found"
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Model file not found!"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+      
+      - name: Run Prediction Pipeline
+        id: run-predictions
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          echo "🚀 Starting prediction pipeline..."
+          python scripts/collect_and_log.py 2>&1 | tee pipeline_log.txt
+          
+          if [ $? -eq 0 ]; then
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+        continue-on-error: true
+      
+      - name: Verify Predictions Generated
+        id: verify-predictions
+        run: |
+          if [ ! -f "docs/predictions/latest.json" ]; then
+            echo "❌ Predictions file not generated!"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          
+          # Check if file has valid JSON
+          if ! jq empty docs/predictions/latest.json 2>/dev/null; then
+            echo "❌ Invalid JSON in predictions file!"
+            echo "status=failed" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          
+          # Extract metadata
+          PRED_DATE=$(jq -r '.prediction_date' docs/predictions/latest.json)
+          PRED_COUNT=$(jq '.predictions | length' docs/predictions/latest.json)
+          SUSPEND_COUNT=$(jq '[.predictions[] | select(.predicted_suspended == true)] | length' docs/predictions/latest.json)
+          AVG_PROB=$(jq '[.predictions[].suspension_probability] | add / length * 100' docs/predictions/latest.json)
+          
+          echo "✅ Predictions verified:"
+          echo "   Date: $PRED_DATE"
+          echo "   Total LGUs: $PRED_COUNT"
+          echo "   Predicted Suspensions: $SUSPEND_COUNT"
+          echo "   Average Probability: ${AVG_PROB}%"
+          
+          echo "date=$PRED_DATE" >> $GITHUB_OUTPUT
+          echo "count=$PRED_COUNT" >> $GITHUB_OUTPUT
+          echo "suspensions=$SUSPEND_COUNT" >> $GITHUB_OUTPUT
+          echo "avg_prob=$AVG_PROB" >> $GITHUB_OUTPUT
+          echo "status=success" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      
+      - name: Parse Pipeline Log for Errors
+        id: parse-errors
+        if: always()
+        run: |
+          echo "📋 Analyzing pipeline logs..."
+          
+          # Initialize error flags
+          PAGASA_ERROR=""
+          WEATHER_ERROR=""
+          FEATURE_ERROR=""
+          MODEL_ERROR=""
+          DB_ERROR=""
+          
+          if [ -f "pipeline_log.txt" ]; then
+            # Check for specific failures
+            if grep -q "Failed to connect to Supabase" pipeline_log.txt; then
+              DB_ERROR="❌ Supabase connection failed"
+            fi
+            
+            if grep -q "PAGASA.*failed\|typhoon.*error" pipeline_log.txt; then
+              PAGASA_ERROR="❌ PAGASA data collection failed"
+            fi
+            
+            if grep -q "weather.*failed\|Open-Meteo.*error" pipeline_log.txt; then
+              WEATHER_ERROR="❌ Weather data collection failed"
+            fi
+            
+            if grep -q "feature.*error\|engineering.*failed" pipeline_log.txt; then
+              FEATURE_ERROR="❌ Feature engineering failed"
+            fi
+            
+            if grep -q "model.*failed\|prediction.*error" pipeline_log.txt; then
+              MODEL_ERROR="❌ Model prediction failed"
+            fi
+          fi
+          
+          # Store errors in output
+          echo "pagasa_error=$PAGASA_ERROR" >> $GITHUB_OUTPUT
+          echo "weather_error=$WEATHER_ERROR" >> $GITHUB_OUTPUT
+          echo "feature_error=$FEATURE_ERROR" >> $GITHUB_OUTPUT
+          echo "model_error=$MODEL_ERROR" >> $GITHUB_OUTPUT
+          echo "db_error=$DB_ERROR" >> $GITHUB_OUTPUT
+      
+      - name: Commit and Push Predictions
+        id: commit-predictions
+        if: steps.verify-predictions.outputs.status == 'success'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Add all prediction files
+          git add docs/predictions/*.json
+          
+          # Check if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            echo "status=skipped" >> $GITHUB_OUTPUT
+          else
+            git commit -m "Update predictions: $(date +'%Y-%m-%d %H:%M UTC') [CI]"
+            echo "status=success" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
+      
+      - name: Push Changes
+        id: push-changes
+        if: steps.commit-predictions.outputs.status == 'success'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+        continue-on-error: true
+      
+      - name: Generate Deployment Summary
+        if: always()
+        run: |
+          echo "## 🤖 Hourly Prediction Pipeline Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Run Time:** $(date +'%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Pipeline Status
+          echo "### 📊 Pipeline Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Python Dependencies
+          if [ "${{ steps.install-python.outputs.status }}" == "success" ]; then
+            echo "- ✅ Python dependencies installed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Python dependencies failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Node Dependencies
+          if [ "${{ steps.install-node.outputs.status }}" == "success" ]; then
+            echo "- ✅ Node.js dependencies installed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Node.js dependencies failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Model Verification
+          if [ "${{ steps.verify-model.outputs.status }}" == "success" ]; then
+            echo "- ✅ EasyEnsemble model verified" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Model file missing" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Prediction Execution
+          if [ "${{ steps.run-predictions.outputs.status }}" == "success" ]; then
+            echo "- ✅ Prediction pipeline executed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Prediction pipeline failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Prediction Verification
+          if [ "${{ steps.verify-predictions.outputs.status }}" == "success" ]; then
+            echo "- ✅ Predictions generated and verified" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Prediction verification failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          # Detailed Results
+          if [ "${{ steps.verify-predictions.outputs.status }}" == "success" ]; then
+            echo "### 🎯 Prediction Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| **Date** | ${{ steps.verify-predictions.outputs.date }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Total LGUs** | ${{ steps.verify-predictions.outputs.count }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Predicted Suspensions** | ${{ steps.verify-predictions.outputs.suspensions }} / ${{ steps.verify-predictions.outputs.count }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Avg Suspension Probability** | ${{ steps.verify-predictions.outputs.avg_prob }}% |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Error Details
+          ERRORS_FOUND=false
+          ERROR_SECTION=""
+          
+          if [ -n "${{ steps.parse-errors.outputs.pagasa_error }}" ]; then
+            ERROR_SECTION="${ERROR_SECTION}\n- ${{ steps.parse-errors.outputs.pagasa_error }}"
+            ERRORS_FOUND=true
+          fi
+          
+          if [ -n "${{ steps.parse-errors.outputs.weather_error }}" ]; then
+            ERROR_SECTION="${ERROR_SECTION}\n- ${{ steps.parse-errors.outputs.weather_error }}"
+            ERRORS_FOUND=true
+          fi
+          
+          if [ -n "${{ steps.parse-errors.outputs.feature_error }}" ]; then
+            ERROR_SECTION="${ERROR_SECTION}\n- ${{ steps.parse-errors.outputs.feature_error }}"
+            ERRORS_FOUND=true
+          fi
+          
+          if [ -n "${{ steps.parse-errors.outputs.model_error }}" ]; then
+            ERROR_SECTION="${ERROR_SECTION}\n- ${{ steps.parse-errors.outputs.model_error }}"
+            ERRORS_FOUND=true
+          fi
+          
+          if [ -n "${{ steps.parse-errors.outputs.db_error }}" ]; then
+            ERROR_SECTION="${ERROR_SECTION}\n- ${{ steps.parse-errors.outputs.db_error }}"
+            ERRORS_FOUND=true
+          fi
+          
+          if [ "$ERRORS_FOUND" = true ]; then
+            echo "### ⚠️ Errors Detected" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo -e "$ERROR_SECTION" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Commit Status
+          echo "### 📤 Deployment Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.commit-predictions.outputs.status }}" == "success" ]; then
+            echo "- ✅ Predictions committed to repository" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.commit-predictions.outputs.status }}" == "skipped" ]; then
+            echo "- ℹ️ No changes to commit (predictions unchanged)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Failed to commit predictions" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ "${{ steps.push-changes.outcome }}" == "success" ]; then
+            echo "- ✅ Changes pushed to GitHub" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Failed to push changes" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          # Final Status
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.verify-predictions.outputs.status }}" == "success" ] && [ "${{ steps.push-changes.outcome }}" == "success" ]; then
+            echo "### ✅ Pipeline Completed Successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Dashboard will update automatically via GitHub Pages deployment." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ❌ Pipeline Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check the logs above for error details. Manual intervention may be required." >> $GITHUB_STEP_SUMMARY
+          fi
+      
+      - name: Upload Pipeline Logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: pipeline-logs-${{ github.run_number }}
+          path: pipeline_log.txt
+          retention-days: 7
+      
+      - name: Fail Workflow if Critical Errors
+        if: steps.verify-predictions.outputs.status != 'success'
+        run: |
+          echo "❌ Workflow failed: Predictions could not be generated or verified"
+          exit 1
