@@ -1,0 +1,474 @@
+{
+  "generated_at": "2025-11-06T02:30:55.918448",
+  "prediction_date": "2025-11-06",
+  "model_version": "v1.0.0",
+  "pagasa_status": {
+    "has_active_typhoon": 1,
+    "typhoon_name": null,
+    "tcws_level": 0,
+    "has_rainfall_warning": 0,
+    "rainfall_warning_level": 0
+  },
+  "weather": {
+    "precipitation_sum_mm": 10.941176414489746,
+    "wind_speed_max_kmh": 12.719438552856445,
+    "temperature_max_c": 29.918968200683594,
+    "humidity_mean_pct": 83.70343017578125
+  },
+  "predictions": [
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Manila",
+      "suspension_probability": 0.40512563275376806,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Quezon City",
+      "suspension_probability": 0.3999255005347407,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Caloocan",
+      "suspension_probability": 0.39904211912075227,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Las Pi\u00f1as",
+      "suspension_probability": 0.40031001925523,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Makati",
+      "suspension_probability": 0.4006359841812089,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Malabon",
+      "suspension_probability": 0.4006359841812089,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Mandaluyong",
+      "suspension_probability": 0.3989507991807448,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Marikina",
+      "suspension_probability": 0.40417908684418696,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Muntinlupa",
+      "suspension_probability": 0.40706562967966353,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Navotas",
+      "suspension_probability": 0.4055409691738577,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Para\u00f1aque",
+      "suspension_probability": 0.4044956982264315,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Pasay",
+      "suspension_probability": 0.40415937673813135,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Pasig",
+      "suspension_probability": 0.4029575991712968,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Pateros",
+      "suspension_probability": 0.40170303681535857,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "San Juan",
+      "suspension_probability": 0.39797733124096474,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Taguig",
+      "suspension_probability": 0.3979146797120209,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-06",
+      "lgu": "Valenzuela",
+      "suspension_probability": 0.4004695380108006,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "\ud83d\udfe0",
+        "status_icon": "\u26a0\ufe0f",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Moderate rain expected",
+        "precipitation": "10.9mm precipitation"
+      }
+    }
+  ],
+  "summary": {
+    "total_lgus": 17,
+    "predicted_suspensions": 0,
+    "avg_probability": 0.40182876381296273
+  }
+}
