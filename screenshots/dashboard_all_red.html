@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Scenario 3 - All RED</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1400px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .header p {
+            font-size: 18px;
+            opacity: 0.95;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        /* Overview Card */
+        .overview-card {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .overview-title {
+            font-size: 24px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 20px 48px;
+            border-radius: 60px;
+            font-size: 36px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            color: white;
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .stats-row {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+        .stat-box {
+            flex: 1;
+            max-width: 200px;
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 16px;
+            border: 2px solid #e5e7eb;
+        }
+        .stat-value {
+            font-size: 48px;
+            font-weight: 900;
+            color: #1f2937;
+            line-height: 1;
+        }
+        .stat-value.red { color: #ef4444; }
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        .recommendation-box {
+            background: #fef2f2;
+            border: 3px solid #ef4444;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .recommendation-box h3 {
+            color: #991b1b;
+            font-size: 20px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .recommendation-box p {
+            color: #dc2626;
+            font-size: 18px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        /* LGU Grid */
+        .lgu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .lgu-card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border-left: 6px solid #ef4444;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .lgu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+        }
+        .lgu-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        .probability {
+            font-size: 56px;
+            font-weight: 900;
+            color: #ef4444;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+        .risk-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: #fecaca;
+            color: #991b1b;
+            margin-bottom: 16px;
+        }
+        .recommendation-text {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        
+        .weather-summary {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-top: 32px;
+            text-align: center;
+        }
+        .weather-summary h3 {
+            font-size: 20px;
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .weather-summary p {
+            font-size: 16px;
+            color: #6b7280;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚨 May Pasok Ba?</h1>
+            <p>Real-time Class Suspension Prediction for Metro Manila</p>
+        </div>
+        
+        <div class="overview-card">
+            <div class="overview-title">Metro Manila Overview</div>
+            <div class="status-badge">🔴 SEVERE ALERT</div>
+            
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-value red">100%</div>
+                    <div class="stat-label">High Risk</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">0%</div>
+                    <div class="stat-label">Moderate Risk</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">0%</div>
+                    <div class="stat-label">Normal</div>
+                </div>
+            </div>
+            
+            <div class="recommendation-box">
+                <h3>🚨 Class Suspensions Highly Expected</h3>
+                <p>Severe weather conditions across all Metro Manila areas. Typhoon Pepito under Signal No. 3. Class suspensions expected in all 17 LGUs. Stay safe and await official announcements from local governments.</p>
+            </div>
+            
+            <div class="weather-summary">
+                <h3>📊 Current Weather Conditions</h3>
+                <p><strong>Temperature:</strong> 23-26°C • <strong>Precipitation:</strong> 120mm (intense to torrential rains) • <strong>Wind:</strong> 89 km/h (gale-force) • <strong>PAGASA Status:</strong> Typhoon Pepito (Tropical Cyclone Wind Signal #3) • <strong>Forecast:</strong> Intense rainfall, flooding, strong winds throughout the day</p>
+            </div>
+        </div>
+        
+        <div class="lgu-grid">
+            <div class="lgu-card">
+                <div class="lgu-name">Manila</div>
+                <div class="probability">78.2%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Quezon City</div>
+                <div class="probability">76.8%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Caloocan</div>
+                <div class="probability">82.5%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Pasig</div>
+                <div class="probability">74.3%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Taguig</div>
+                <div class="probability">71.9%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Makati</div>
+                <div class="probability">69.2%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Mandaluyong</div>
+                <div class="probability">77.7%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">San Juan</div>
+                <div class="probability">79.1%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Marikina</div>
+                <div class="probability">88.4%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Pasay</div>
+                <div class="probability">81.8%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Parañaque</div>
+                <div class="probability">80.6%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Las Piñas</div>
+                <div class="probability">75.3%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Muntinlupa</div>
+                <div class="probability">72.8%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Malabon</div>
+                <div class="probability">87.1%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Navotas</div>
+                <div class="probability">89.9%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Valenzuela</div>
+                <div class="probability">83.4%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+            
+            <div class="lgu-card">
+                <div class="lgu-name">Pateros</div>
+                <div class="probability">73.7%</div>
+                <div class="risk-badge">🔴 RED</div>
+                <div class="recommendation-text">Suspension highly expected, stay indoors</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

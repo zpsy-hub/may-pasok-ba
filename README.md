@@ -1,31 +1,57 @@
-# 🎒 May Pasok Ba? - Suspension Prediction System
+# 🎒 May Pasok Ba? - AI Class Suspension Predictor
 
-**AI-powered suspension prediction system for Metro Manila schools**
+**Smart suspension prediction system for Metro Manila schools using machine learning and real-time weather data**
 
-Predicts class suspensions based on weather conditions, PAGASA warnings, and historical patterns using machine learning.
+Accurately predicts class suspensions 24-48 hours ahead by analyzing PAGASA typhoon warnings, detailed weather forecasts, and historical suspension patterns using an advanced EasyEnsemble ML model.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://zpsy-hub.github.io/may-pasok-ba/)
+[![Live Dashboard](https://img.shields.io/badge/🌐_dashboard-live-brightgreen)](https://zpsy-hub.github.io/may-pasok-ba/)
+[![Model: EasyEnsemble](https://img.shields.io/badge/model-EasyEnsemble-blue)](model-training/notebooks/)
+[![Hourly Updates](https://img.shields.io/badge/updates-hourly-orange)](https://github.com/zpsy-hub/may-pasok-ba/actions)
 
 ---
 
-## 🌟 Features
+## 🌟 Key Features
 
-✅ **Real-time predictions** for 17 Metro Manila LGUs  
-✅ **Dual weather sources**: PAGASA typhoon warnings + Open-Meteo detailed weather  
-✅ **Machine learning model** trained on historical suspension data  
-✅ **Live dashboard** with interactive charts and maps  
-✅ **Automated collection** via GitHub Actions (hourly updates)  
-✅ **Database logging** with Supabase PostgreSQL  
+### 🎯 Smart Predictions
+- **87.7% accuracy** on real-world validation (Sept-Oct 2025)
+- **51.7% recall** - catches half of actual suspensions
+- **All 17 Metro Manila LGUs** covered
+- **3 risk tiers**: Normal (<40%), Alert (40-55%), Suspension (>55%)
+
+### 🤖 Advanced ML Model
+- **EasyEnsemble Classifier** with 50 estimators
+- **33 engineered features**: temporal, geographic, weather, PAGASA signals
+- **F2 score optimized** for suspension detection (prioritizes recall)
+- Trained on historical suspension data with weather context
+
+### 📡 Dual Data Sources
+- **PAGASA**: Typhoon bulletins, TCWS levels, rainfall warnings
+- **Open-Meteo API**: 48-hour detailed weather forecasts
+- Real-time scraping every hour via GitHub Actions
+
+### 📊 Live Dashboard
+- Interactive map and charts
+- Hourly weather timeline
+- Historical prediction logs with performance analysis
+- Mobile-responsive design
+
+### ⚙️ Fully Automated
+- **Hourly predictions** via GitHub Actions
+- Automatic commit and deployment
+- Comprehensive error logging
+- Supabase database integration  
 
 ---
 
 ## 🚀 Quick Links
 
 - **🌐 Live Dashboard**: [https://zpsy-hub.github.io/may-pasok-ba/](https://zpsy-hub.github.io/may-pasok-ba/)
-- **📊 Latest Predictions**: [docs/predictions/latest.json](docs/predictions/latest.json)
-- **📚 Documentation**: See folders below
+- **📊 Latest Predictions**: [latest.json](https://zpsy-hub.github.io/may-pasok-ba/predictions/latest.json)
+- **📈 Historical Analysis**: [Performance Dashboard](https://zpsy-hub.github.io/may-pasok-ba/prediction-logs.html)
+- **📚 Documentation**: [HOURLY_PREDICTION_PIPELINE.md](HOURLY_PREDICTION_PIPELINE.md)
+- **🔧 GitHub Actions**: [Workflow Runs](https://github.com/zpsy-hub/may-pasok-ba/actions)
 
 ---
 

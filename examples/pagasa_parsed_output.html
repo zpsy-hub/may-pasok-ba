@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAGASA Bulletin Parsed Output Example</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f97316 0%, #dc2626 100%);
+            padding: 40px 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f97316 0%, #dc2626 100%);
+            color: white;
+            padding: 30px 40px;
+            border-bottom: 4px solid #ea580c;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin: 5px 0;
+        }
+        
+        .alert-banner {
+            background: #fef3c7;
+            border-left: 6px solid #f59e0b;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .alert-banner .icon {
+            font-size: 32px;
+        }
+        
+        .alert-banner .text h3 {
+            font-size: 18px;
+            color: #92400e;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        .alert-banner .text p {
+            font-size: 14px;
+            color: #78350f;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #1f2937;
+            margin-bottom: 25px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: #f97316;
+            border-radius: 2px;
+        }
+        
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .field-card {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .field-card:hover {
+            border-color: #f97316;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .field-label {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .field-value {
+            font-size: 18px;
+            color: #1f2937;
+            font-weight: 600;
+        }
+        
+        .field-value.active {
+            color: #dc2626;
+            font-size: 22px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-active {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #dc2626;
+        }
+        
+        .status-affected {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+        }
+        
+        .tcws-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 32px;
+            font-weight: 800;
+            background: #dc2626;
+            color: white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+        
+        .info-box {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-box h4 {
+            color: #1e40af;
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .info-box p {
+            color: #1e3a8a;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-box ul li {
+            color: #1e3a8a;
+            font-size: 14px;
+            padding: 6px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+        
+        .info-box ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        
+        .source-link {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .source-link h4 {
+            color: #1f2937;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .source-link a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        
+        .source-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .metadata {
+            background: #f9fafb;
+            border-top: 2px solid #e5e7eb;
+            padding: 20px 40px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        .metadata p {
+            margin: 5px 0;
+        }
+        
+        .metadata strong {
+            color: #374151;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🌪️</span>
+                PAGASA Bulletin Parsed Output
+            </h1>
+            <p>Structured data extracted from PAGASA Severe Weather Bulletin</p>
+            <p>Automated scraping and parsing by Node.js scraper module</p>
+        </div>
+        
+        <div class="alert-banner">
+            <div class="icon">⚠️</div>
+            <div class="text">
+                <h3>Severe Weather Bulletin #12</h3>
+                <p>Tropical Cyclone Warning issued for Metro Manila and surrounding areas</p>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="section-title">Typhoon Information</div>
+            
+            <div class="field-grid">
+                <div class="field-card">
+                    <div class="field-label">Active Typhoon</div>
+                    <div class="field-value">
+                        <span class="status-badge status-active">YES</span>
+                    </div>
+                </div>
+                
+                <div class="field-card">
+                    <div class="field-label">Typhoon Name</div>
+                    <div class="field-value active">PEPITO</div>
+                </div>
+                
+                <div class="field-card">
+                    <div class="field-label">International Name</div>
+                    <div class="field-value">MAN-YI</div>
+                </div>
+                
+                <div class="field-card">
+                    <div class="field-label">TCWS Level</div>
+                    <div class="field-value">
+                        <span class="tcws-badge">3</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-title">Metro Manila Impact Status</div>
+            
+            <div class="field-grid">
+                <div class="field-card">
+                    <div class="field-label">Metro Manila Affected</div>
+                    <div class="field-value">
+                        <span class="status-badge status-affected">AFFECTED</span>
+                    </div>
+                </div>
+                
+                <div class="field-card">
+                    <div class="field-label">Rainfall Warning</div>
+                    <div class="field-value active">ORANGE</div>
+                </div>
+                
+                <div class="field-card">
+                    <div class="field-label">Expected Rainfall</div>
+                    <div class="field-value">100-200 mm</div>
+                </div>
+                
+                <div class="field-card">
+                    <div class="field-label">Wind Threat</div>
+                    <div class="field-value">121-170 km/h</div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h4>🌧️ Current Weather Threats</h4>
+                <ul>
+                    <li>Heavy to intense rainfall expected in next 24 hours</li>
+                    <li>Strong winds with damaging gusts possible</li>
+                    <li>Potential flash floods in low-lying areas</li>
+                    <li>Storm surge warning for coastal communities (1-2 meters)</li>
+                    <li>Sea travel NOT ADVISED - rough to very rough seas</li>
+                </ul>
+            </div>
+            
+            <div class="section-title">Affected Areas Detail</div>
+            
+            <div class="info-box">
+                <h4>📍 Areas Under TCWS Signal #3</h4>
+                <p><strong>Metro Manila:</strong> All 17 cities and municipality (Manila, Quezon City, Caloocan, Pasig, Taguig, Makati, Mandaluyong, San Juan, Marikina, Pasay, Parañaque, Las Piñas, Muntinlupa, Malabon, Navotas, Valenzuela, Pateros)</p>
+                <p><strong>Nearby Provinces:</strong> Rizal, Cavite (northern portion), Bulacan (southern portion), Laguna (northern portion)</p>
+            </div>
+            
+            <div class="section-title">Parsed Data Structure</div>
+            
+            <div class="field-grid">
+                <div class="field-card">
+                    <div class="field-label">Bulletin Date</div>
+                    <div class="field-value">2025-09-22</div>
+                </div>
+                
+                <div class="field-card">
+                    <div class="field-label">Collection Timestamp</div>
+                    <div class="field-value">2025-09-22 14:30:45 UTC</div>
+                </div>
+                
+                <div class="field-card">
+                    <div class="field-label">Scraper Version</div>
+                    <div class="field-value">v2.1.3</div>
+                </div>
+                
+                <div class="field-card">
+                    <div class="field-label">Parse Success</div>
+                    <div class="field-value">
+                        <span class="status-badge status-affected">✓ SUCCESS</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="source-link">
+                <h4>Source Bulletin URL</h4>
+                <a href="https://www.pagasa.dost.gov.ph/tropical-cyclone/severe-weather-bulletin/12" target="_blank">
+                    https://www.pagasa.dost.gov.ph/tropical-cyclone/severe-weather-bulletin/12
+                </a>
+            </div>
+            
+            <div class="info-box" style="margin-top: 30px;">
+                <h4>💡 Data Usage in Prediction System</h4>
+                <p>This parsed PAGASA bulletin data is transformed into two key ML features:</p>
+                <ul>
+                    <li><strong>has_active_typhoon:</strong> Boolean (1) - triggers higher suspension probability</li>
+                    <li><strong>tcws_level:</strong> Integer (3) - one of the top 5 most important features in the model</li>
+                </ul>
+                <p style="margin-top: 12px;">When combined with weather forecast data (precipitation, wind speed), these PAGASA features significantly increase predicted suspension probability from ~15% baseline to 70-85% for affected areas.</p>
+            </div>
+        </div>
+        
+        <div class="metadata">
+            <p><strong>Scraper Module:</strong> nodejs-pagasa/scrape_severe_weather_bulletin.js</p>
+            <p><strong>Parser Type:</strong> Regular Expression + HTML Parsing (Cheerio)</p>
+            <p><strong>Update Frequency:</strong> Every pipeline run (hourly) with 30-minute cache</p>
+            <p><strong>Fallback Behavior:</strong> If scraping fails, defaults to "No active typhoon" (TCWS = 0)</p>
+        </div>
+    </div>
+</body>
+</html>

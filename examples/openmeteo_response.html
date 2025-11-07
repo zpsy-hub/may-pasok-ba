@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open-Meteo API Response Example - Manila</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            border-bottom: 4px solid #5568d3;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin: 5px 0;
+        }
+        
+        .meta-info {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .meta-row {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .meta-item label {
+            display: block;
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .meta-item value {
+            display: block;
+            font-size: 16px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: #667eea;
+            border-radius: 2px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .data-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .data-table th {
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .data-table tbody tr {
+            border-bottom: 1px solid #e5e7eb;
+            transition: background-color 0.2s;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .data-table tbody tr:last-child {
+            border-bottom: none;
+        }
+        
+        .data-table td {
+            padding: 14px 12px;
+            color: #374151;
+        }
+        
+        .data-table td:first-child {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #92400e;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-rain {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .badge-temp {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .badge-wind {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .note {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 16px 20px;
+            margin-top: 30px;
+            border-radius: 8px;
+        }
+        
+        .note p {
+            font-size: 14px;
+            color: #1e40af;
+            line-height: 1.6;
+        }
+        
+        .note strong {
+            color: #1e3a8a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📡 Open-Meteo API Response Sample</h1>
+            <p>7-Day Weather Forecast Data for Manila, Metro Manila</p>
+            <p>Example response showing raw data structure from Open-Meteo API</p>
+        </div>
+        
+        <div class="meta-info">
+            <div class="meta-row">
+                <div class="meta-item">
+                    <label>API Endpoint</label>
+                    <value>https://api.open-meteo.com/v1/forecast</value>
+                </div>
+                <div class="meta-item">
+                    <label>Location</label>
+                    <value>Manila (14.5995°N, 120.9842°E)</value>
+                </div>
+                <div class="meta-item">
+                    <label>Forecast Period</label>
+                    <value>November 6-12, 2025 (7 days)</value>
+                </div>
+                <div class="meta-item">
+                    <label>Collection Time</label>
+                    <value>2025-11-06 08:00 UTC</value>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="section-title">Daily Weather Variables (Sample: November 6, 2025)</div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Value</th>
+                        <th>Unit</th>
+                        <th>Category</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>temperature_2m_max</td>
+                        <td class="highlight">33.2</td>
+                        <td>°C</td>
+                        <td><span class="badge badge-temp">Temperature</span></td>
+                        <td>Maximum temperature at 2m height</td>
+                    </tr>
+                    <tr>
+                        <td>temperature_2m_min</td>
+                        <td class="highlight">24.8</td>
+                        <td>°C</td>
+                        <td><span class="badge badge-temp">Temperature</span></td>
+                        <td>Minimum temperature at 2m height</td>
+                    </tr>
+                    <tr>
+                        <td>temperature_2m_mean</td>
+                        <td class="highlight">28.5</td>
+                        <td>°C</td>
+                        <td><span class="badge badge-temp">Temperature</span></td>
+                        <td>Daily average temperature</td>
+                    </tr>
+                    <tr>
+                        <td>apparent_temperature_max</td>
+                        <td class="highlight">38.7</td>
+                        <td>°C</td>
+                        <td><span class="badge badge-temp">Temperature</span></td>
+                        <td>Maximum "feels like" temperature</td>
+                    </tr>
+                    <tr>
+                        <td>apparent_temperature_min</td>
+                        <td class="highlight">26.1</td>
+                        <td>°C</td>
+                        <td><span class="badge badge-temp">Temperature</span></td>
+                        <td>Minimum "feels like" temperature</td>
+                    </tr>
+                    <tr>
+                        <td>precipitation_sum</td>
+                        <td class="highlight">12.4</td>
+                        <td>mm</td>
+                        <td><span class="badge badge-rain">Precipitation</span></td>
+                        <td>Total daily precipitation</td>
+                    </tr>
+                    <tr>
+                        <td>wind_speed_10m_max</td>
+                        <td class="highlight">28.5</td>
+                        <td>km/h</td>
+                        <td><span class="badge badge-wind">Wind</span></td>
+                        <td>Maximum wind speed at 10m</td>
+                    </tr>
+                    <tr>
+                        <td>wind_gusts_10m_max</td>
+                        <td class="highlight">42.1</td>
+                        <td>km/h</td>
+                        <td><span class="badge badge-wind">Wind</span></td>
+                        <td>Maximum wind gusts at 10m</td>
+                    </tr>
+                    <tr>
+                        <td>relative_humidity_2m_mean</td>
+                        <td class="highlight">78.3</td>
+                        <td>%</td>
+                        <td><span class="badge badge-temp">Humidity</span></td>
+                        <td>Daily average relative humidity</td>
+                    </tr>
+                    <tr>
+                        <td>surface_pressure_mean</td>
+                        <td class="highlight">1010.2</td>
+                        <td>hPa</td>
+                        <td><span class="badge badge-wind">Pressure</span></td>
+                        <td>Mean atmospheric pressure</td>
+                    </tr>
+                    <tr>
+                        <td>cloud_cover_mean</td>
+                        <td class="highlight">65.8</td>
+                        <td>%</td>
+                        <td><span class="badge badge-wind">Cloud</span></td>
+                        <td>Average cloud coverage</td>
+                    </tr>
+                    <tr>
+                        <td>visibility_min</td>
+                        <td class="highlight">8400</td>
+                        <td>meters</td>
+                        <td><span class="badge badge-wind">Visibility</span></td>
+                        <td>Minimum visibility distance</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="section-title">7-Day Forecast Summary</div>
+            
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Max Temp (°C)</th>
+                        <th>Min Temp (°C)</th>
+                        <th>Precipitation (mm)</th>
+                        <th>Max Wind (km/h)</th>
+                        <th>Conditions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Nov 6</td>
+                        <td>33.2</td>
+                        <td>24.8</td>
+                        <td>12.4</td>
+                        <td>28.5</td>
+                        <td>Partly cloudy, scattered showers</td>
+                    </tr>
+                    <tr>
+                        <td>Nov 7</td>
+                        <td>32.8</td>
+                        <td>25.1</td>
+                        <td>8.2</td>
+                        <td>24.3</td>
+                        <td>Mostly cloudy, isolated thunderstorms</td>
+                    </tr>
+                    <tr>
+                        <td>Nov 8</td>
+                        <td>34.1</td>
+                        <td>24.6</td>
+                        <td>3.5</td>
+                        <td>22.7</td>
+                        <td>Partly sunny, light rain</td>
+                    </tr>
+                    <tr>
+                        <td>Nov 9</td>
+                        <td>33.5</td>
+                        <td>25.3</td>
+                        <td>15.8</td>
+                        <td>31.2</td>
+                        <td>Cloudy with moderate rain</td>
+                    </tr>
+                    <tr>
+                        <td>Nov 10</td>
+                        <td>32.1</td>
+                        <td>24.9</td>
+                        <td>22.6</td>
+                        <td>35.8</td>
+                        <td>Heavy clouds, frequent showers</td>
+                    </tr>
+                    <tr>
+                        <td>Nov 11</td>
+                        <td>31.8</td>
+                        <td>25.2</td>
+                        <td>18.4</td>
+                        <td>29.6</td>
+                        <td>Overcast, scattered rain</td>
+                    </tr>
+                    <tr>
+                        <td>Nov 12</td>
+                        <td>33.6</td>
+                        <td>24.7</td>
+                        <td>6.1</td>
+                        <td>26.4</td>
+                        <td>Partly cloudy, clearing</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="note">
+                <p><strong>Data Processing Note:</strong> This raw API response contains 16 weather variables per LGU per day. The system aggregates hourly data into daily statistics (mean, max, min, sum) before feeding into the feature engineering pipeline. These values are then combined with historical lag features and PAGASA typhoon status to create the final 33-feature vector for ML prediction.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

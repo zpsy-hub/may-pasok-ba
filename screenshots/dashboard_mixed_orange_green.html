@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Scenario 4 - Mixed ORANGE/GREEN</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1400px;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .header p {
+            font-size: 18px;
+            opacity: 0.95;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        /* Overview Card */
+        .overview-card {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .overview-title {
+            font-size: 24px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 20px 48px;
+            border-radius: 60px;
+            font-size: 36px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, #f59e0b, #10b981);
+            color: white;
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+        }
+        .stats-row {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-bottom: 32px;
+        }
+        .stat-box {
+            flex: 1;
+            max-width: 200px;
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 16px;
+            border: 2px solid #e5e7eb;
+        }
+        .stat-value {
+            font-size: 48px;
+            font-weight: 900;
+            color: #1f2937;
+            line-height: 1;
+        }
+        .stat-value.orange { color: #f59e0b; }
+        .stat-value.green { color: #10b981; }
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        .recommendation-box {
+            background: #fffbeb;
+            border: 3px solid #f59e0b;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .recommendation-box h3 {
+            color: #92400e;
+            font-size: 20px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        .recommendation-box p {
+            color: #b45309;
+            font-size: 18px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        /* LGU Grid */
+        .lgu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .lgu-card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .lgu-card.orange {
+            border-left: 6px solid #f59e0b;
+        }
+        .lgu-card.green {
+            border-left: 6px solid #10b981;
+        }
+        .lgu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+        }
+        .lgu-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+        .probability {
+            font-size: 56px;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+        .probability.orange { color: #f59e0b; }
+        .probability.green { color: #10b981; }
+        .risk-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+        .risk-badge.orange {
+            background: #fed7aa;
+            color: #92400e;
+        }
+        .risk-badge.green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .recommendation-text {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        
+        .weather-summary {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            margin-top: 32px;
+            text-align: center;
+        }
+        .weather-summary h3 {
+            font-size: 20px;
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .weather-summary p {
+            font-size: 16px;
+            color: #6b7280;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚠️ May Pasok Ba?</h1>
+            <p>Real-time Class Suspension Prediction for Metro Manila</p>
+        </div>
+        
+        <div class="overview-card">
+            <div class="overview-title">Metro Manila Overview</div>
+            <div class="status-badge">🟠 MIXED CONDITIONS</div>
+            
+            <div class="stats-row">
+                <div class="stat-box">
+                    <div class="stat-value">0%</div>
+                    <div class="stat-label">High Risk</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value orange">71%</div>
+                    <div class="stat-label">Moderate Risk</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value green">29%</div>
+                    <div class="stat-label">Normal</div>
+                </div>
+            </div>
+            
+            <div class="recommendation-box">
+                <h3>⚠️ Localized Weather Conditions</h3>
+                <p>12 LGUs under moderate risk, 5 LGUs remain normal. Localized rainfall warnings in northern and eastern Metro Manila. Check your specific LGU for updates.</p>
+            </div>
+            
+            <div class="weather-summary">
+                <h3>📊 Current Weather Conditions</h3>
+                <p><strong>Temperature:</strong> 26-29°C • <strong>Precipitation:</strong> 35mm (moderate, localized heavy rains) • <strong>Wind:</strong> 28 km/h • <strong>PAGASA Status:</strong> Localized thunderstorms • <strong>Forecast:</strong> Scattered to widespread rains in northern areas, partly cloudy in southern areas</p>
+            </div>
+        </div>
+        
+        <div class="lgu-grid">
+            <div class="lgu-card orange">
+                <div class="lgu-name">Manila</div>
+                <div class="probability orange">45.2%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">Quezon City</div>
+                <div class="probability orange">47.8%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">Caloocan</div>
+                <div class="probability orange">51.5%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">Pasig</div>
+                <div class="probability orange">43.3%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card green">
+                <div class="lgu-name">Taguig</div>
+                <div class="probability green">38.9%</div>
+                <div class="risk-badge green">🟢 GREEN</div>
+                <div class="recommendation-text">Continue classes normally</div>
+            </div>
+            
+            <div class="lgu-card green">
+                <div class="lgu-name">Makati</div>
+                <div class="probability green">35.2%</div>
+                <div class="risk-badge green">🟢 GREEN</div>
+                <div class="recommendation-text">Continue classes normally</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">Mandaluyong</div>
+                <div class="probability orange">44.7%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">San Juan</div>
+                <div class="probability orange">46.1%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">Marikina</div>
+                <div class="probability orange">53.4%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">Pasay</div>
+                <div class="probability orange">42.8%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card green">
+                <div class="lgu-name">Parañaque</div>
+                <div class="probability green">37.6%</div>
+                <div class="risk-badge green">🟢 GREEN</div>
+                <div class="recommendation-text">Continue classes normally</div>
+            </div>
+            
+            <div class="lgu-card green">
+                <div class="lgu-name">Las Piñas</div>
+                <div class="probability green">34.3%</div>
+                <div class="risk-badge green">🟢 GREEN</div>
+                <div class="recommendation-text">Continue classes normally</div>
+            </div>
+            
+            <div class="lgu-card green">
+                <div class="lgu-name">Muntinlupa</div>
+                <div class="probability green">32.8%</div>
+                <div class="risk-badge green">🟢 GREEN</div>
+                <div class="recommendation-text">Continue classes normally</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">Malabon</div>
+                <div class="probability orange">52.1%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">Navotas</div>
+                <div class="probability orange">54.9%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">Valenzuela</div>
+                <div class="probability orange">49.4%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+            
+            <div class="lgu-card orange">
+                <div class="lgu-name">Pateros</div>
+                <div class="probability orange">41.7%</div>
+                <div class="risk-badge orange">🟠 ORANGE</div>
+                <div class="recommendation-text">Monitor closely, prepare for possible suspension</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
