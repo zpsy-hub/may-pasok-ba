@@ -1,0 +1,484 @@
+{
+  "generated_at": "2025-11-08T04:08:13.860424",
+  "prediction_date": "2025-11-08",
+  "model_version": "v1.0.0",
+  "pagasa_status": {
+    "has_active_typhoon": 1,
+    "typhoon_name": null,
+    "tcws_level": 0,
+    "has_rainfall_warning": 0,
+    "rainfall_warning_level": 0
+  },
+  "weather": {
+    "precipitation_sum_mm": 35.4058837890625,
+    "wind_speed_max_kmh": 54.758480072021484,
+    "temperature_max_c": 28.671913146972656,
+    "humidity_mean_pct": 80.6617660522461
+  },
+  "predictions": [
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Manila",
+      "suspension_probability": 0.5880940095169291,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Quezon City",
+      "suspension_probability": 0.5825503375336273,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Caloocan",
+      "suspension_probability": 0.5820671410210018,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Las Pi\u00f1as",
+      "suspension_probability": 0.5833337470100689,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Makati",
+      "suspension_probability": 0.5836497040275335,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Malabon",
+      "suspension_probability": 0.5836497040275335,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Mandaluyong",
+      "suspension_probability": 0.5817266694906386,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Marikina",
+      "suspension_probability": 0.587102945504197,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Muntinlupa",
+      "suspension_probability": 0.5899198915446482,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Navotas",
+      "suspension_probability": 0.5883900298321524,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Para\u00f1aque",
+      "suspension_probability": 0.5872823925309784,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Pasay",
+      "suspension_probability": 0.5868671453495716,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Pasig",
+      "suspension_probability": 0.5856173376245427,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Pateros",
+      "suspension_probability": 0.5843831581574322,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "San Juan",
+      "suspension_probability": 0.5804159103899764,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Taguig",
+      "suspension_probability": 0.5803020682287877,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-08",
+      "lgu": "Valenzuela",
+      "suspension_probability": 0.5830636394483547,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "suspension",
+        "color": "#ef4444",
+        "emoji": "\ud83d\udd34",
+        "status_icon": "\u26d4",
+        "title": "CLASS SUSPENSION",
+        "subtitle": "Severe weather conditions",
+        "recommendation": "SUSPEND face-to-face classes",
+        "actions": [
+          "Issue suspension announcement",
+          "Activate online/modular learning",
+          "Monitor for multi-day impact",
+          "Coordinate with local government",
+          "Ensure student safety protocols active"
+        ],
+        "monitoring_interval": "Continuous monitoring (hourly)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.4mm precipitation"
+      }
+    }
+  ],
+  "summary": {
+    "total_lgus": 17,
+    "predicted_suspensions": 17,
+    "avg_probability": 0.584612695955175
+  }
+}

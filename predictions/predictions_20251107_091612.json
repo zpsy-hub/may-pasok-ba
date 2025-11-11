@@ -1,0 +1,450 @@
+{
+  "generated_at": "2025-11-07T09:16:12.940710",
+  "prediction_date": "2025-11-07",
+  "model_version": "v1.0.0",
+  "pagasa_status": {
+    "has_active_typhoon": 0,
+    "typhoon_name": null,
+    "tcws_level": 0,
+    "has_rainfall_warning": 0,
+    "rainfall_warning_level": 0
+  },
+  "weather": {
+    "precipitation_sum_mm": 0.0470588281750679,
+    "wind_speed_max_kmh": 10.731887817382812,
+    "temperature_max_c": 30.121912002563477,
+    "humidity_mean_pct": 81.52205657958984
+  },
+  "predictions": [
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Manila",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Quezon City",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Caloocan",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Las Pi\u00f1as",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Makati",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Malabon",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Mandaluyong",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Marikina",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Muntinlupa",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Navotas",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Para\u00f1aque",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Pasay",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Pasig",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Pateros",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "San Juan",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Taguig",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-07",
+      "lgu": "Valenzuela",
+      "suspension_probability": 0.0,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "\ud83d\udfe2",
+        "status_icon": "\u2713",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Light rain possible",
+        "precipitation": "0.0mm precipitation"
+      }
+    }
+  ],
+  "summary": {
+    "total_lgus": 17,
+    "predicted_suspensions": 0,
+    "avg_probability": 0.0
+  }
+}

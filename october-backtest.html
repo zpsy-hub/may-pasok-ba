@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>October 2025 Model Backtest - May Pasok Ba?</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light-bg: #f8f9fa;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+        .stat-card .label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .chart-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+        .chart-card h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        .data-table th {
+            background: var(--light-bg);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            border-bottom: 2px solid #dee2e6;
+        }
+        .data-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 0.95rem;
+        }
+        .data-table tr:hover {
+            background: var(--light-bg);
+        }
+        .risk-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .risk-high { background: #fce4e4; color: #c62828; }
+        .risk-medium { background: #fff9e6; color: #d68400; }
+        .risk-low { background: #e8f5e9; color: #2e7d32; }
+        .diff-positive { color: var(--danger); font-weight: 700; }
+        .diff-negative { color: var(--success); font-weight: 700; }
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            color: var(--primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+        }
+        .filter-section {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+        .filter-section label {
+            font-weight: 600;
+            margin-right: 1rem;
+            color: var(--text-primary);
+        }
+        .filter-section select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-right: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="learn-more.html" class="back-btn">
+            <i data-lucide="arrow-left" style="width: 20px; height: 20px;"></i>
+            Back to Learn More
+        </a>
+
+        <div class="header">
+            <h1>October 2025 Model Backtest</h1>
+            <p>Comparing Calibrated vs Uncalibrated Model Predictions</p>
+        </div>
+
+        <div id="loadingMessage" class="loading">
+            <p>Loading backtest data...</p>
+        </div>
+
+        <div id="content" style="display: none;">
+            <!-- Summary Statistics -->
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <!-- Calibration Impact Charts -->
+            <div class="chart-card">
+                <h2>XGBoost: Calibration Impact Over Time</h2>
+                <div class="chart-container">
+                    <canvas id="xgboostChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h2>CatBoost: Calibration Impact Over Time</h2>
+                <div class="chart-container">
+                    <canvas id="catboostChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <label for="lguFilter">Filter by LGU:</label>
+                <select id="lguFilter">
+                    <option value="all">All LGUs</option>
+                </select>
+                <label for="dateFilter">Filter by Date:</label>
+                <select id="dateFilter">
+                    <option value="all">All Dates</option>
+                </select>
+            </div>
+
+            <!-- Detailed Data Table -->
+            <div class="chart-card">
+                <h2>Detailed Predictions</h2>
+                <table class="data-table" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>LGU</th>
+                            <th>XGB Uncal</th>
+                            <th>XGB Cal</th>
+                            <th>Δ</th>
+                            <th>CAT Uncal</th>
+                            <th>CAT Cal</th>
+                            <th>Δ</th>
+                            <th>Rain 24h</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="9">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let allData = [];
+        let currentFilter = { lgu: 'all', date: 'all' };
+
+        // Load backtest data
+        async function loadBacktestData() {
+            try {
+                // Try to load the most recent backtest file
+                const response = await fetch('october_backtest_latest.json');
+                
+                if (!response.ok) {
+                    throw new Error('Backtest data not found');
+                }
+
+                const data = await response.json();
+                allData = data.results.filter(r => r.status === 'success');
+                
+                // Populate filters
+                populateFilters();
+                
+                // Display data
+                displaySummaryStats(data.metadata);
+                createCharts();
+                updateTable();
+                
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loadingMessage').innerHTML = `
+                    <p style="color: var(--danger);">❌ Backtest data not found</p>
+                    <p style="color: var(--text-secondary); margin-top: 1rem;">
+                        Run the backtest first: <code>python statistical_testing/october_backtest.py</code>
+                    </p>
+                `;
+            }
+        }
+
+        function populateFilters() {
+            const lgus = [...new Set(allData.map(d => d.lgu))].sort();
+            const dates = [...new Set(allData.map(d => d.date))].sort();
+
+            const lguFilter = document.getElementById('lguFilter');
+            lgus.forEach(lgu => {
+                const option = document.createElement('option');
+                option.value = lgu;
+                option.textContent = lgu;
+                lguFilter.appendChild(option);
+            });
+
+            const dateFilter = document.getElementById('dateFilter');
+            dates.forEach(date => {
+                const option = document.createElement('option');
+                option.value = date;
+                option.textContent = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                dateFilter.appendChild(option);
+            });
+
+            lguFilter.addEventListener('change', (e) => {
+                currentFilter.lgu = e.target.value;
+                updateTable();
+            });
+
+            dateFilter.addEventListener('change', (e) => {
+                currentFilter.date = e.target.value;
+                updateTable();
+            });
+        }
+
+        function displaySummaryStats(metadata) {
+            const xgbDiffs = allData.map(d => d.xgboost_difference);
+            const catDiffs = allData.map(d => d.catboost_difference);
+
+            const avgXgbDiff = (xgbDiffs.reduce((a, b) => a + b, 0) / xgbDiffs.length * 100).toFixed(2);
+            const avgCatDiff = (catDiffs.reduce((a, b) => a + b, 0) / catDiffs.length * 100).toFixed(2);
+
+            const xgbRiskChanges = allData.filter(d => d.xgboost_uncalib_risk !== d.xgboost_calib_risk).length;
+            const catRiskChanges = allData.filter(d => d.catboost_uncalib_risk !== d.catboost_calib_risk).length;
+
+            const statsHtml = `
+                <div class="stat-card">
+                    <h3>Total Predictions</h3>
+                    <div class="value">${metadata.total_predictions}</div>
+                    <div class="label">${metadata.days_tested} days × ${metadata.lgus_tested} LGUs</div>
+                </div>
+                <div class="stat-card">
+                    <h3>XGBoost Avg Calibration Change</h3>
+                    <div class="value">${avgXgbDiff > 0 ? '+' : ''}${avgXgbDiff}%</div>
+                    <div class="label">${xgbRiskChanges} risk level changes</div>
+                </div>
+                <div class="stat-card">
+                    <h3>CatBoost Avg Calibration Change</h3>
+                    <div class="value">${avgCatDiff > 0 ? '+' : ''}${avgCatDiff}%</div>
+                    <div class="label">${catRiskChanges} risk level changes</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Success Rate</h3>
+                    <div class="value">${((metadata.successful / metadata.total_predictions) * 100).toFixed(1)}%</div>
+                    <div class="label">${metadata.successful} successful predictions</div>
+                </div>
+            `;
+
+            document.getElementById('statsGrid').innerHTML = statsHtml;
+        }
+
+        function createCharts() {
+            // Group by date and calculate averages
+            const dateGroups = {};
+            allData.forEach(d => {
+                if (!dateGroups[d.date]) {
+                    dateGroups[d.date] = {
+                        xgb_uncal: [],
+                        xgb_cal: [],
+                        cat_uncal: [],
+                        cat_cal: []
+                    };
+                }
+                dateGroups[d.date].xgb_uncal.push(d.xgboost_uncalibrated);
+                dateGroups[d.date].xgb_cal.push(d.xgboost_calibrated);
+                dateGroups[d.date].cat_uncal.push(d.catboost_uncalibrated);
+                dateGroups[d.date].cat_cal.push(d.catboost_calibrated);
+            });
+
+            const dates = Object.keys(dateGroups).sort();
+            const xgbUncalAvg = dates.map(d => {
+                const vals = dateGroups[d].xgb_uncal;
+                return (vals.reduce((a, b) => a + b, 0) / vals.length * 100).toFixed(1);
+            });
+            const xgbCalAvg = dates.map(d => {
+                const vals = dateGroups[d].xgb_cal;
+                return (vals.reduce((a, b) => a + b, 0) / vals.length * 100).toFixed(1);
+            });
+            const catUncalAvg = dates.map(d => {
+                const vals = dateGroups[d].cat_uncal;
+                return (vals.reduce((a, b) => a + b, 0) / vals.length * 100).toFixed(1);
+            });
+            const catCalAvg = dates.map(d => {
+                const vals = dateGroups[d].cat_cal;
+                return (vals.reduce((a, b) => a + b, 0) / vals.length * 100).toFixed(1);
+            });
+
+            const dateLabels = dates.map(d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+            // XGBoost Chart
+            new Chart(document.getElementById('xgboostChart'), {
+                type: 'line',
+                data: {
+                    labels: dateLabels,
+                    datasets: [{
+                        label: 'Uncalibrated',
+                        data: xgbUncalAvg,
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Calibrated',
+                        data: xgbCalAvg,
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.dataset.label}: ${context.parsed.y}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Suspension Probability (%)' }
+                        }
+                    }
+                }
+            });
+
+            // CatBoost Chart
+            new Chart(document.getElementById('catboostChart'), {
+                type: 'line',
+                data: {
+                    labels: dateLabels,
+                    datasets: [{
+                        label: 'Uncalibrated',
+                        data: catUncalAvg,
+                        borderColor: '#dc3545',
+                        backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                        tension: 0.4
+                    }, {
+                        label: 'Calibrated',
+                        data: catCalAvg,
+                        borderColor: '#28a745',
+                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.dataset.label}: ${context.parsed.y}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Suspension Probability (%)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTable() {
+            let filteredData = allData;
+
+            if (currentFilter.lgu !== 'all') {
+                filteredData = filteredData.filter(d => d.lgu === currentFilter.lgu);
+            }
+
+            if (currentFilter.date !== 'all') {
+                filteredData = filteredData.filter(d => d.date === currentFilter.date);
+            }
+
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = filteredData.map(d => `
+                <tr>
+                    <td>${new Date(d.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
+                    <td>${d.lgu}</td>
+                    <td>${(d.xgboost_uncalibrated * 100).toFixed(1)}%</td>
+                    <td>${(d.xgboost_calibrated * 100).toFixed(1)}%</td>
+                    <td class="${d.xgboost_difference > 0 ? 'diff-positive' : 'diff-negative'}">
+                        ${d.xgboost_difference > 0 ? '+' : ''}${(d.xgboost_difference * 100).toFixed(1)}%
+                    </td>
+                    <td>${(d.catboost_uncalibrated * 100).toFixed(1)}%</td>
+                    <td>${(d.catboost_calibrated * 100).toFixed(1)}%</td>
+                    <td class="${d.catboost_difference > 0 ? 'diff-positive' : 'diff-negative'}">
+                        ${d.catboost_difference > 0 ? '+' : ''}${(d.catboost_difference * 100).toFixed(1)}%
+                    </td>
+                    <td>${d.rainfall_24h.toFixed(1)}mm</td>
+                </tr>
+            `).join('');
+        }
+
+        // Load data on page load
+        loadBacktestData();
+    </script>
+</body>
+</html>

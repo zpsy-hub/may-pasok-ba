@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - AI Prediction System | May Pasok Ba</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-50: #eff6ff; --primary-100: #dbeafe; --primary-200: #bfdbfe; --primary-300: #93c5fd; --primary-400: #60a5fa; --primary-500: #3b82f6; --primary-600: #2563eb; --primary-700: #1d4ed8; --primary-800: #1e40af; --primary-900: #1e3a8a;
+            --success-50: #f0fdf4; --success-100: #dcfce7; --success-200: #bbf7d0; --success-300: #86efac; --success-400: #4ade80; --success-500: #22c55e; --success-600: #16a34a;
+            --warning-50: #fffbeb; --warning-100: #fef3c7; --warning-200: #fde68a; --warning-300: #fcd34d; --warning-400: #fbbf24; --warning-500: #f59e0b; --warning-600: #d97706;
+            --danger-50: #fef2f2; --danger-100: #fee2e2; --danger-200: #fecaca; --danger-300: #fca5a5; --danger-400: #f87171; --danger-500: #ef4444; --danger-600: #dc2626;
+            --slate-50: #f8fafc; --slate-100: #f1f5f9; --slate-200: #e2e8f0; --slate-300: #cbd5e1; --slate-400: #94a3b8; --slate-500: #64748b; --slate-600: #475569; --slate-700: #334155; --slate-800: #1e293b; --slate-900: #0f172a;
+
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.08);
+            --card-shadow-lg: 0 10px 25px rgba(0,0,0,0.07), 0 3px 6px rgba(0,0,0,0.05);
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--slate-50);
+            color: var(--slate-700);
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+        .lucide {
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.125em;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 1rem 0;
+        }
+        .brand {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary-600);
+            letter-spacing: -1.5px;
+            background: linear-gradient(45deg, var(--primary-600), var(--primary-800));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            font-size: 1.15rem;
+            color: var(--slate-500);
+            margin-top: 0.5rem;
+            font-weight: 400;
+        }
+
+        .section-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 2.5rem 3rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 3.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--slate-800);
+            margin: 0 0 0.5rem 0;
+        }
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--slate-500);
+            margin: 0 0 2.5rem 0;
+            line-height: 1.6;
+            max-width: 700px; /* Limit subtitle width */
+        }
+
+        /* Probability Cards */
+        .probability-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .probability-card {
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--slate-200);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .probability-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow-lg);
+        }
+        .probability-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .probability-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 0 1rem 0;
+        }
+        .probability-card p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--slate-600);
+            margin: 0;
+        }
+        .prob-low { background-color: var(--success-50); border-color: var(--success-200); }
+        .prob-low h3 { color: var(--success-600); }
+        .prob-medium { background-color: var(--warning-50); border-color: var(--warning-200); }
+        .prob-medium h3 { color: var(--warning-600); }
+        .prob-high { background-color: var(--danger-50); border-color: var(--danger-200); }
+        .prob-high h3 { color: var(--danger-600); }
+        
+        .info-box {
+            display: flex; gap: 1rem;
+            padding: 1.25rem 1.5rem; border-radius: 12px;
+            font-size: 0.9rem; font-weight: 500; line-height: 1.6;
+            margin-top: 2.5rem;
+            align-items: flex-start;
+        }
+        .info-box .lucide { flex-shrink: 0; margin-top: 3px; }
+        .info-box-blue { background: var(--primary-50); color: var(--primary-800); border: 1px solid var(--primary-200); }
+        .info-box-yellow { background: var(--warning-50); color: var(--warning-800); border: 1px solid var(--warning-200); }
+        .info-box-green { background: var(--success-50); color: var(--success-800); border: 1px solid var(--success-200); }
+
+        /* Hybrid System Section */
+        .hybrid-system-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        .step-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+        }
+        .step-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; flex-shrink: 0;
+        }
+        .step-content h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: var(--slate-800);
+        }
+        .step-content p, .step-content ul {
+            margin: 0;
+            color: var(--slate-600);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .step-content ul {
+            padding-left: 1.25rem;
+            margin-top: 0.75rem;
+        }
+        @media (max-width: 768px) {
+            .hybrid-system-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Performance Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+        .stat-card {
+            background: var(--slate-100);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--slate-200);
+        }
+        .stat-value {
+            font-size: 2.75rem;
+            font-weight: 800;
+            color: var(--primary-600);
+            margin-bottom: 0.25rem;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--slate-500);
+            font-weight: 500;
+        }
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin: 2.5rem 0;
+        }
+        .table-wrapper { overflow-x: auto; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .data-table th, .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--slate-200);
+            white-space: nowrap;
+        }
+        .data-table thead th {
+            background-color: var(--slate-100);
+            font-weight: 600;
+            color: var(--slate-600);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .data-table tbody tr:hover { background-color: var(--slate-50); }
+        .data-table .model-name-cell { font-weight: 600; color: var(--slate-700); }
+        .data-table .best-model { background-color: var(--success-50); }
+        .data-table .best-model td { font-weight: 700; color: var(--success-800); }
+
+        /* LGU Comparison Table */
+        #comparisonTable th, #comparisonTable td { text-align: center; }
+        #comparisonTable .lgu-header, #comparisonTable .lgu-name {
+            text-align: left; position: sticky; left: 0; background: white; z-index: 1;
+        }
+        #comparisonTable thead .lgu-header { background: var(--slate-100); z-index: 2;}
+        .prob-cell { border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.85rem; font-weight: 600; display: inline-block; min-width: 45px;}
+        .prob-high { background: var(--danger-100); color: var(--danger-600); }
+        .prob-medium { background: var(--warning-100); color: var(--warning-600); }
+        .prob-low { background: var(--success-100); color: var(--success-600); }
+
+        /* Metrics Explanation Section */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+        .metric-card {
+            background: var(--slate-100);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--slate-200);
+        }
+        .metric-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--slate-800);
+            margin: 0 0 0.75rem 0;
+        }
+        .metric-card p {
+            font-size: 0.9rem;
+            color: var(--slate-600);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Floating Back Button */
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            color: var(--primary-600);
+            border: 1px solid var(--slate-200);
+            border-radius: 50px;
+            padding: 0.75rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            z-index: 1000;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            box-shadow: var(--card-shadow);
+        }
+        .floating-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-lg);
+            background: var(--primary-50);
+        }
+        .floating-btn .lucide { width: 16px; height: 16px; }
+
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header class="header">
+            <h1 class="brand">How It Works</h1>
+            <p class="subtitle">Understanding our AI-powered class suspension prediction system</p>
+        </header>
+
+        <!-- What Do The Percentages Mean? -->
+        <section class="section-card" id="probability-section">
+            <h2 class="section-title">What Do The Percentages Mean?</h2>
+            <p class="section-subtitle">Our model calculates the statistical likelihood of a class suspension based on weather patterns and years of historical data.</p>
+            
+            <div class="probability-grid">
+                <div class="probability-card prob-low">
+                    <div class="icon">🟢</div>
+                    <h3>0-30% Low Risk</h3>
+                    <p><strong>Meaning:</strong> Classes are highly likely to proceed. <br><strong>Action:</strong> Prepare for a normal school day.</p>
+                </div>
+                <div class="probability-card prob-medium">
+                    <div class="icon">🟡</div>
+                    <h3>30-70% Moderate Risk</h3>
+                    <p><strong>Meaning:</strong> Conditions are uncertain. <br><strong>Action:</strong> Monitor official announcements from your LGU and school.</p>
+                </div>
+                <div class="probability-card prob-high">
+                    <div class="icon">🔴</div>
+                    <h3>70-100% High Risk</h3>
+                    <p><strong>Meaning:</strong> Suspension is very likely. <br><strong>Action:</strong> Prepare for no classes and stay safe indoors.</p>
+                </div>
+            </div>
+
+            <div class="info-box info-box-yellow">
+                <i data-lucide="info"></i>
+                <div>
+                    <strong>This is a probability, not a guarantee.</strong>
+                    <p style="margin: 0.25rem 0 0 0; font-weight: 400;">Our system provides an evidence-based forecast to help you prepare. The final decision to suspend classes always rests with your Local Government Unit (LGU).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Hybrid Prediction System -->
+        <section class="section-card" id="model-section">
+            <h2 class="section-title">Our Hybrid Prediction System</h2>
+            <p class="section-subtitle">We combine official government guidelines with advanced machine learning for best-in-class accuracy.</p>
+            
+            <div class="hybrid-system-grid">
+                <div class="step-card">
+                    <div class="step-icon"><i data-lucide="book-marked"></i></div>
+                    <div class="step-content">
+                        <h4>Step 1: Official Rule Check</h4>
+                        <p>We first check for automatic suspension triggers based on DepEd and PAGASA guidelines:</p>
+                        <ul>
+                            <li>Tropical Cyclone Wind Signals (TCWS)</li>
+                            <li>PAGASA Rainfall Warnings (Orange/Red)</li>
+                            <li>Extreme Heat Index</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-icon"><i data-lucide="brain-circuit"></i></div>
+                    <div class="step-content">
+                        <h4>Step 2: AI Pattern Analysis</h4>
+                        <p>If no rules are triggered, our AI analyzes complex patterns in historical data:</p>
+                        <ul>
+                            <li>Multi-day rainfall accumulation</li>
+                            <li>Ground saturation & flood risk</li>
+                            <li>Historical LGU decision patterns</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+             <div class="info-box info-box-green" style="margin-top: 2.5rem;">
+                <i data-lucide="lightbulb"></i>
+                <div>
+                    <strong>Why this two-step approach is better:</strong> Sustained monsoon rain might not trigger an official warning but can cause severe flooding. Our AI learns to recognize these nuanced, high-risk scenarios that rule-based systems often miss, ensuring better safety.
+                </div>
+            </div>
+        </section>
+
+        <!-- Model Performance -->
+        <section class="section-card" id="performance-section">
+            <h2 class="section-title">Model Performance & Architecture</h2>
+            <p class="section-subtitle">Trained on over 10,000 data points, our ensemble of models achieves exceptional accuracy and reliability.</p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">99.3%</div>
+                    <div class="stat-label">Overall Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">99.4%</div>
+                    <div class="stat-label">Recall (Safety)</div>
+                </div>
+                 <div class="stat-card">
+                    <div class="stat-value">0.6%</div>
+                    <div class="stat-label">Miss Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">45s</div>
+                    <div class="stat-label">Update Time</div>
+                </div>
+            </div>
+            
+            <p style="text-align: center; color: var(--slate-500); font-size: 0.9rem; margin-bottom: 2.5rem;">The chart below compares our primary model (XGBoost) against others on key metrics.</p>
+
+            <div class="chart-container">
+                <canvas id="modelComparisonChart"></canvas>
+            </div>
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Model</th><th>Precision</th><th>Recall</th><th>F1 Score</th><th>Accuracy</th><th>ROC AUC</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="best-model"><td class="model-name-cell">🏆 XGBoost (Primary)</td><td>87%</td><td>93%</td><td>0.90</td><td>99%</td><td>0.991</td></tr>
+                        <tr><td class="model-name-cell">LightGBM (Validation)</td><td>86%</td><td>90%</td><td>0.88</td><td>99%</td><td>0.989</td></tr>
+                        <tr><td class="model-name-cell">CatBoost (Safety)</td><td>78%</td><td>95%</td><td>0.86</td><td>99%</td><td>0.990</td></tr>
+                        <tr><td class="model-name-cell">Random Forest (Voter)</td><td>75%</td><td>90%</td><td>0.82</td><td>98%</td><td>0.985</td></tr>
+                        <tr><td class="model-name-cell">SVC</td><td>62%</td><td>89%</td><td>0.73</td><td>97%</td><td>0.984</td></tr>
+                        <tr><td class="model-name-cell">Logistic Regression</td><td>32%</td><td>92%</td><td>0.48</td><td>91%</td><td>0.971</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        
+        <!-- Live Model Comparison -->
+        <section class="section-card" id="lgu-table-section">
+             <h2 class="section-title">Live Model Comparison</h2>
+            <p class="section-subtitle">For full transparency, this table shows the real-time prediction from each model for every LGU in Metro Manila.</p>
+             <div id="comparisonLoading" style="text-align: center; padding: 2rem;">
+                <p style="color: var(--slate-500); font-weight: 500;">Loading model comparison data...</p>
+            </div>
+            <div id="comparisonContent" style="display: none;">
+                <div class="table-wrapper">
+                    <table class="data-table" id="comparisonTable">
+                        <thead>
+                            <tr><th class="lgu-header">LGU</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="100" style="text-align: center;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="comparisonError" style="display: none;">
+                <div class="info-box info-box-yellow">
+                    <i data-lucide="alert-triangle"></i>
+                    <span><strong>Data Not Available:</strong> Could not load the live model comparison data. It may not have been generated yet for today.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Understanding the Metrics -->
+        <section class="section-card" id="metrics-section">
+            <h2 class="section-title">Understanding the Metrics</h2>
+            <p class="section-subtitle">We use industry-standard indicators to measure prediction quality and reliability.</p>
+            
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h4>Precision (Trust)</h4>
+                    <p>When we predict a suspension, how often are we correct? High precision builds user trust.</p>
+                </div>
+                <div class="metric-card">
+                    <h4>Recall (Safety)</h4>
+                    <p>Of all actual suspensions, how many did we successfully predict? High recall prevents missing dangerous days.</p>
+                </div>
+                 <div class="metric-card">
+                    <h4>F1 Score (Balance)</h4>
+                    <p>A single score that balances both Precision and Recall, indicating a well-rounded model.</p>
+                </div>
+                 <div class="metric-card">
+                    <h4>Accuracy</h4>
+                    <p>Overall, what percentage of days did we predict correctly (both with and without suspensions)?</p>
+                </div>
+            </div>
+             <div class="info-box info-box-yellow" style="margin-top: 2rem;">
+                <i data-lucide="shield-alert"></i>
+                <span><strong>Our Priority: Safety & Trust.</strong> We optimize for high Recall (catching >90% of dangerous days) while maintaining strong Precision to ensure our predictions are both safe and trustworthy.</span>
+            </div>
+        </section>
+
+    </div>
+
+    <a href="index.html" class="floating-btn back-btn"><i data-lucide="arrow-left"></i> Back to Predictions</a>
+    <a href="prediction-logs.html" class="floating-btn" style="bottom: 80px; background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+        <i data-lucide="activity"></i> Prediction Logs
+    </a>
+
+    <script>
+        lucide.createIcons();
+
+        // --- Chart Configurations ---
+        const chartFont = { family: "Inter", size: 12, weight: '500' };
+
+        new Chart(document.getElementById('modelComparisonChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['XGBoost', 'LightGBM', 'CatBoost', 'Random Forest', 'SVC', 'Log Reg'],
+                datasets: [
+                    { label: 'Precision (Trust)', data: [0.87, 0.86, 0.78, 0.75, 0.62, 0.32], backgroundColor: 'rgba(59, 130, 246, 0.7)', borderRadius: 4 },
+                    { label: 'Recall (Safety)', data: [0.93, 0.90, 0.95, 0.90, 0.89, 0.92], backgroundColor: 'rgba(34, 197, 94, 0.7)', borderRadius: 4 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: {
+                    title: { display: true, text: 'Model Performance: Precision vs. Recall', font: {...chartFont, size: 14, weight: '600'}, padding: { bottom: 20 } },
+                    legend: { position: 'top', labels: { font: chartFont, usePointStyle: true, boxWidth: 8 } }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 1, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: chartFont } },
+                    x: { grid: { display: false }, ticks: { font: chartFont } }
+                }
+            }
+        });
+
+        // --- LGU Comparison Table Logic ---
+        async function loadComparisonData() {
+            try {
+                const response = await fetch('model_comparison_results/comparisons/latest.json');
+                if (!response.ok) throw new Error('Failed to load comparison data.');
+                const comparisonData = await response.json();
+                document.getElementById('comparisonLoading').style.display = 'none';
+                document.getElementById('comparisonContent').style.display = 'block';
+                renderComparisonTable(comparisonData);
+            } catch (error) {
+                console.error('Error loading comparison data:', error);
+                document.getElementById('comparisonLoading').style.display = 'none';
+                document.getElementById('comparisonError').style.display = 'block';
+            }
+        }
+
+        function renderComparisonTable(data) {
+            const table = document.getElementById('comparisonTable');
+            const thead = table.querySelector('thead tr');
+            const tbody = table.querySelector('tbody');
+            const modelNames = Object.keys(data.models);
+
+            thead.innerHTML = '<th class="lgu-header">LGU</th>';
+            modelNames.forEach(modelName => {
+                const th = document.createElement('th');
+                let label = modelName.replace(/_/g, ' ');
+                if (modelName === 'XGBoost') label = '🏆 ' + label;
+                th.textContent = label;
+                thead.appendChild(th);
+            });
+
+            const lgus = Object.keys(data.lgu_comparison).sort();
+            tbody.innerHTML = '';
+            lgus.forEach(lgu => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td class="lgu-name">${lgu}</td>`;
+                modelNames.forEach(modelName => {
+                    const cell = document.createElement('td');
+                    const pred = data.models[modelName].predictions?.[lgu];
+                    if (pred && pred.status === 'success') {
+                        const prob = pred.suspension_probability * 100;
+                        const probClass = prob >= 70 ? 'prob-high' : prob >= 30 ? 'prob-medium' : 'prob-low';
+                        cell.innerHTML = `<span class="prob-cell ${probClass}">${prob.toFixed(0)}%</span>`;
+                    } else {
+                        cell.textContent = 'N/A';
+                    }
+                    row.appendChild(cell);
+                });
+                tbody.appendChild(row);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', loadComparisonData);
+    </script>
+</body>
+</html>

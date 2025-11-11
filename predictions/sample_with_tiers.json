@@ -1,0 +1,161 @@
+{
+  "generated_at": "2025-11-03T10:00:00",
+  "prediction_date": "2025-11-03",
+  "model_version": "v1.0.0",
+  "pagasa_status": {
+    "has_active_typhoon": 0,
+    "typhoon_name": null,
+    "tcws_level": 0,
+    "has_rainfall_warning": 1,
+    "rainfall_warning_level": "ORANGE"
+  },
+  "weather": {
+    "precipitation_sum_mm": 35.5,
+    "wind_speed_max_kmh": 45.2,
+    "temperature_max_c": 29.8,
+    "humidity_mean_pct": 82.3
+  },
+  "predictions": [
+    {
+      "prediction_date": "2025-11-03",
+      "lgu": "Manila",
+      "suspension_probability": 0.487,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "🟠",
+        "status_icon": "⚠️",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.5mm precipitation",
+        "pagasa_advisory": "PAGASA: Orange Rainfall Warning"
+      }
+    },
+    {
+      "prediction_date": "2025-11-03",
+      "lgu": "Quezon City",
+      "suspension_probability": 0.502,
+      "predicted_suspended": true,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "🟠",
+        "status_icon": "⚠️",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office",
+          "Review evacuation procedures",
+          "Activate weather monitoring team"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Very heavy rain expected",
+        "precipitation": "35.5mm precipitation",
+        "pagasa_advisory": "PAGASA: Orange Rainfall Warning"
+      }
+    },
+    {
+      "prediction_date": "2025-11-03",
+      "lgu": "Caloocan",
+      "suspension_probability": 0.395,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "🟢",
+        "status_icon": "✓",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Heavy rain likely",
+        "precipitation": "35.5mm precipitation",
+        "pagasa_advisory": "PAGASA: Orange Rainfall Warning"
+      }
+    },
+    {
+      "prediction_date": "2025-11-03",
+      "lgu": "Las Piñas",
+      "suspension_probability": 0.378,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "normal",
+        "color": "#22c55e",
+        "emoji": "🟢",
+        "status_icon": "✓",
+        "title": "NORMAL CONDITIONS",
+        "subtitle": "Continue routine operations",
+        "recommendation": "No suspension expected",
+        "actions": [
+          "Continue regular class schedule",
+          "Monitor weather updates",
+          "Maintain standard preparedness protocols"
+        ],
+        "monitoring_interval": "Standard monitoring (daily)"
+      },
+      "weather_context": {
+        "weather_desc": "Heavy rain likely",
+        "precipitation": "35.5mm precipitation"
+      }
+    },
+    {
+      "prediction_date": "2025-11-03",
+      "lgu": "Makati",
+      "suspension_probability": 0.412,
+      "predicted_suspended": false,
+      "risk_tier": {
+        "tier": "alert",
+        "color": "#f97316",
+        "emoji": "🟠",
+        "status_icon": "⚠️",
+        "title": "WEATHER ALERT",
+        "subtitle": "Enhanced monitoring needed",
+        "recommendation": "Prepare for possible suspension",
+        "actions": [
+          "Monitor updates every 2 hours",
+          "Prepare early dismissal plan",
+          "Coordinate with DRRM office"
+        ],
+        "monitoring_interval": "Enhanced monitoring (every 2 hours)"
+      },
+      "weather_context": {
+        "weather_desc": "Heavy rain likely",
+        "precipitation": "35.5mm precipitation"
+      }
+    }
+  ],
+  "summary": {
+    "total_lgus": 5,
+    "predicted_suspensions": 1,
+    "avg_probability": 0.4348
+  },
+  "metadata": {
+    "timestamp": "2025-11-03T10:00:00",
+    "note": "Sample data with risk tier interpretation for testing"
+  }
+}

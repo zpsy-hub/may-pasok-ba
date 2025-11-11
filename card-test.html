@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Design Tests - May Pasok Ba?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: #FFF9E6;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        /* Desktop Layout - Side by Side */
+        .desktop-layout {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .desktop-left {
+            flex: 0 0 auto;
+            min-width: 300px;
+        }
+
+        .desktop-right {
+            flex: 1;
+        }
+
+        .desktop-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+        }
+
+        .desktop-metric-card {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+        .desktop-metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        @media (max-width: 768px) {
+            .desktop-layout {
+                flex-direction: column;
+            }
+            
+            .desktop-left {
+                width: 100%;
+            }
+
+            .desktop-metrics {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+
+        /* Spacious Cards with Variable Sizes */
+        .spacious-metrics {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+        }
+
+        .spacious-large {
+            grid-row: span 2;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .spacious-small {
+            background: white;
+            padding: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .spacious-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .spacious-large {
+                grid-row: span 1;
+            }
+        }
+
+        .card-title {
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+        }
+
+        /* OPTION 1: Current Design (Compact) */
+        .option1 .city-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .option1 .warning-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .option1 .alert-badge {
+            background: #ff9800;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .option1 .weather-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+            padding: 0.75rem 0;
+            border-top: 1px solid rgba(0,0,0,0.06);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .option1 .metric {
+            text-align: center;
+        }
+
+        .option1 .metric-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .option1 .metric-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .option1 .metric-label {
+            font-size: 0.75rem;
+            color: #666;
+            opacity: 0.7;
+        }
+
+        /* OPTION 2: Spacious with Cards */
+        .option2 .city-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .option2 .warning-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .option2 .alert-badge {
+            background: #ff9800;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .option2 .weather-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .option2 .metric {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .option2 .metric-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .option2 .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .option2 .metric-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* OPTION 3: Horizontal Layout */
+        .option3 .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .option3 .city-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .option3 .alert-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .option3 .warning-icon {
+            font-size: 3rem;
+        }
+
+        .option3 .alert-badge {
+            background: #ff9800;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+        }
+
+        .option3 .weather-metrics {
+            display: flex;
+            justify-content: space-around;
+            padding: 1.5rem 0;
+            border-top: 2px solid rgba(0,0,0,0.1);
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .option3 .metric {
+            text-align: center;
+        }
+
+        .option3 .metric-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .option3 .metric-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .option3 .metric-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        /* OPTION 4: Minimal Clean */
+        .option4 .city-name {
+            font-size: 2rem;
+            font-weight: 300;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            letter-spacing: 1px;
+        }
+
+        .option4 .alert-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .option4 .warning-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .option4 .alert-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+            color: white;
+            padding: 0.5rem 2rem;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+
+        .option4 .weather-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            margin: 2rem 0;
+        }
+
+        .option4 .metric {
+            text-align: center;
+            padding: 1rem 0;
+            border-right: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .option4 .metric:last-child {
+            border-right: none;
+        }
+
+        .option4 .metric-icon {
+            font-size: 1.75rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.8;
+        }
+
+        .option4 .metric-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+
+        .option4 .metric-label {
+            font-size: 0.7rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* OPTION 5: Bold & Colorful */
+        .option5 .city-name {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .option5 .warning-icon {
+            font-size: 5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .option5 .alert-badge {
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+        }
+
+        .option5 .weather-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .option5 .metric {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid rgba(255, 152, 0, 0.2);
+        }
+
+        .option5 .metric-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .option5 .metric-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #2c3e50;
+        }
+
+        .option5 .metric-label {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        /* OPTION 6: Card Within Card */
+        .option6 .city-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .option6 .alert-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .option6 .warning-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .option6 .alert-badge {
+            display: inline-block;
+            background: #ff9800;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .option6 .weather-metrics {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .option6 .metric {
+            text-align: center;
+        }
+
+        .option6 .metric-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .option6 .metric-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .option6 .metric-label {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Common Section */
+        .section {
+            background: rgba(0,0,0,0.03);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+        }
+
+        .section-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .section-content {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Prediction Card Design Options</h1>
+        <p style="text-align: center; color: white; margin-bottom: 2rem; font-size: 1.1rem;">
+            Comparing: Current header + OPTION 4 metrics vs. Current header + OPTION 4 metrics + Weather interpretation
+        </p>
+
+        <div class="grid" style="grid-template-columns: repeat(2, 1fr); max-width: 1000px; margin: 0 auto;">
+        <div class="grid" style="grid-template-columns: repeat(2, 1fr); max-width: 1000px; margin: 0 auto;">
+            <!-- OPTION A: Current Header + Minimal Metrics -->
+            <div class="card hybrid-a">
+                <div class="card-title">OPTION A: Clean Metrics Only</div>
+                
+                <!-- Current header style -->
+                <div class="city-name" style="font-size: 2rem; font-weight: 700; color: #2c3e50; text-align: center; margin: 0 0 1.5rem 0;">
+                    Muntinlupa
+                </div>
+                
+                <div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">⚠️</div>
+                
+                <div style="background: #ff9800; color: white; padding: 0.75rem 1.5rem; border-radius: 25px; text-align: center; font-weight: 600; margin-bottom: 1.5rem;">
+                    🟠 ALERT
+                </div>
+                
+                <!-- Option 4 minimal metrics -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 1.5rem 0;">
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">🌧️</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">1.3mm</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Rainfall</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">💨</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">24</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Wind km/h</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">🌡️</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">29.7°</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Max Temp</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">💧</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">78%</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Humidity</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">⚠️ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Check school announcements by 6 PM today<br>
+                        • Stay updated on weather and flood warnings<br>
+                        • Have emergency contacts ready
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTION B: With Weather Interpretation -->
+            <div class="card hybrid-b">
+                <div class="card-title">OPTION B: With Weather Context</div>
+                
+                <!-- Current header style -->
+                <div class="city-name" style="font-size: 2rem; font-weight: 700; color: #2c3e50; text-align: center; margin: 0 0 1.5rem 0;">
+                    Muntinlupa
+                </div>
+                
+                <div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">⚠️</div>
+                
+                <div style="background: #ff9800; color: white; padding: 0.75rem 1.5rem; border-radius: 25px; text-align: center; font-weight: 600; margin-bottom: 1.5rem;">
+                    🟠 ALERT
+                </div>
+                
+                <!-- Weather interpretation box -->
+                <div style="background: rgba(255, 152, 0, 0.1); border-left: 3px solid #ff9800; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.6;">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">Weather Summary:</div>
+                    <div style="color: #666;">Light rain expected with moderate winds. Humid conditions throughout the day.</div>
+                </div>
+                
+                <!-- Option 4 minimal metrics -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 1.5rem 0;">
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">🌧️</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">1.3mm</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Rainfall</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">💨</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">24</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Wind km/h</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">🌡️</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">29.7°</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Max Temp</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">💧</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">78%</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Humidity</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">⚠️ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Check school announcements by 6 PM today<br>
+                        • Stay updated on weather and flood warnings<br>
+                        • Have emergency contacts ready
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW: OPTION 2 SPACIOUS WITH VARIABLE SIZES -->
+        <h2 style="color: white; text-align: center; margin: 3rem 0 1rem 0; font-size: 1.5rem;">
+            🎨 OPTION 2: Spacious Cards with Variable Sizes
+        </h2>
+        <p style="text-align: center; color: white; margin-bottom: 2rem; opacity: 0.9;">
+            Different sized boxes + rule-based weather interpretation
+        </p>
+
+        <div style="max-width: 900px; margin: 0 auto 3rem auto;">
+            <!-- ORANGE ALERT - SPACIOUS -->
+            <div class="card">
+                <div class="card-title">SPACIOUS: Orange Alert with Smart Interpretation</div>
+                
+                <div style="font-size: 2rem; font-weight: 700; color: #2c3e50; text-align: center; margin: 0 0 1.5rem 0;">
+                    Muntinlupa
+                </div>
+                
+                <div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">⚠️</div>
+                
+                <div style="background: #ff9800; color: white; padding: 0.75rem 1.5rem; border-radius: 25px; text-align: center; font-weight: 600; margin-bottom: 1.5rem;">
+                    🟠 ALERT
+                </div>
+
+                <!-- Rule-based interpretation -->
+                <div style="background: rgba(255, 152, 0, 0.1); border-left: 3px solid #ff9800; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem;">🌤️ Weather Conditions:</div>
+                    <div style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                        <strong>Light rain</strong> with <strong>moderate winds</strong>. Humidity is <strong>high</strong>. Conditions may worsen.
+                    </div>
+                </div>
+                
+                <!-- Variable-sized metric cards -->
+                <div class="spacious-metrics">
+                    <!-- Large card: Rainfall (most important) -->
+                    <div class="spacious-large">
+                        <div style="font-size: 3rem; margin-bottom: 0.75rem; text-align: center;">🌧️</div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #2c3e50; text-align: center; margin-bottom: 0.5rem;">1.3mm</div>
+                        <div style="font-size: 0.9rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; margin-bottom: 0.75rem;">24-Hour Rainfall</div>
+                        <div style="font-size: 0.85rem; color: #666; text-align: center; padding: 0.5rem; background: rgba(255, 152, 0, 0.1); border-radius: 8px;">
+                            ⚠️ Light but concerning
+                        </div>
+                    </div>
+                    
+                    <!-- Small cards: 4 smaller metrics -->
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💨</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">24 km/h</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Wind</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.5rem;">Moderate</div>
+                    </div>
+                    
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌡️</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">29.7°C</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Temperature</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.5rem;">Warm</div>
+                    </div>
+                    
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💧</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">78%</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Humidity</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.5rem;">High</div>
+                    </div>
+                    
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">⏰</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">6 PM</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Check By</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.5rem;">Tonight</div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <div class="section-title">⚠️ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Check school announcements by 6 PM today<br>
+                        • Stay updated on weather and flood warnings<br>
+                        • Have emergency contacts ready
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RED HIGH RISK - SPACIOUS -->
+        <div style="max-width: 900px; margin: 0 auto 3rem auto;">
+            <div class="card">
+                <div class="card-title">SPACIOUS: Red High Risk with Smart Interpretation</div>
+                
+                <div style="font-size: 2rem; font-weight: 700; color: #2c3e50; text-align: center; margin: 0 0 1.5rem 0;">
+                    Marikina
+                </div>
+                
+                <div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">⚠️</div>
+                
+                <div style="background: #f44336; color: white; padding: 0.75rem 1.5rem; border-radius: 25px; text-align: center; font-weight: 600; margin-bottom: 1.5rem;">
+                    🔴 HIGH RISK
+                </div>
+
+                <!-- Rule-based interpretation for heavy rain -->
+                <div style="background: rgba(244, 67, 54, 0.1); border-left: 3px solid #f44336; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem;">⛈️ Severe Weather:</div>
+                    <div style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                        <strong>Heavy rain</strong> with <strong>strong winds</strong>. Humidity is <strong>very high</strong>. Flooding expected in low-lying areas.
+                    </div>
+                </div>
+                
+                <!-- Variable-sized metric cards -->
+                <div class="spacious-metrics">
+                    <!-- Large card: Rainfall (most important) -->
+                    <div class="spacious-large">
+                        <div style="font-size: 3rem; margin-bottom: 0.75rem; text-align: center;">🌧️</div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #f44336; text-align: center; margin-bottom: 0.5rem;">45mm</div>
+                        <div style="font-size: 0.9rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; margin-bottom: 0.75rem;">24-Hour Rainfall</div>
+                        <div style="font-size: 0.85rem; color: #c62828; font-weight: 600; text-align: center; padding: 0.5rem; background: rgba(244, 67, 54, 0.15); border-radius: 8px;">
+                            🚨 Very heavy - flooding risk
+                        </div>
+                    </div>
+                    
+                    <!-- Small cards: 4 smaller metrics -->
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💨</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #f44336; margin-bottom: 0.25rem;">65 km/h</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Wind</div>
+                        <div style="font-size: 0.75rem; color: #c62828; font-weight: 600; margin-top: 0.5rem;">Strong</div>
+                    </div>
+                    
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌡️</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">26.8°C</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Temperature</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.5rem;">Cool</div>
+                    </div>
+                    
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💧</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #f44336; margin-bottom: 0.25rem;">92%</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Humidity</div>
+                        <div style="font-size: 0.75rem; color: #c62828; font-weight: 600; margin-top: 0.5rem;">Very High</div>
+                    </div>
+                    
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🚨</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #f44336; margin-bottom: 0.25rem;">ASAP</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Action</div>
+                        <div style="font-size: 0.75rem; color: #c62828; font-weight: 600; margin-top: 0.5rem;">Urgent</div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <div class="section-title">🚨 URGENT RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Expect suspension announcement soon<br>
+                        • Stay indoors and avoid flooded areas<br>
+                        • Monitor official emergency channels<br>
+                        • Keep emergency supplies ready
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GREEN NORMAL - SPACIOUS -->
+        <div style="max-width: 900px; margin: 0 auto 3rem auto;">
+            <div class="card">
+                <div class="card-title">SPACIOUS: Green Normal with Smart Interpretation</div>
+                
+                <div style="font-size: 2rem; font-weight: 700; color: #2c3e50; text-align: center; margin: 0 0 1.5rem 0;">
+                    Taguig
+                </div>
+                
+                <div style="background: #4caf50; color: white; padding: 0.75rem 1.5rem; border-radius: 25px; text-align: center; font-weight: 600; margin-bottom: 1.5rem;">
+                    🟢 NORMAL
+                </div>
+
+                <!-- Rule-based interpretation for good weather -->
+                <div style="background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4caf50; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem;">☀️ Good Weather:</div>
+                    <div style="color: #666; font-size: 0.95rem; line-height: 1.6;">
+                        <strong>Minimal rain</strong> with <strong>light winds</strong>. Humidity is <strong>moderate</strong>. Good weather for classes.
+                    </div>
+                </div>
+                
+                <!-- Variable-sized metric cards -->
+                <div class="spacious-metrics">
+                    <!-- Large card: Rainfall (most important) -->
+                    <div class="spacious-large">
+                        <div style="font-size: 3rem; margin-bottom: 0.75rem; text-align: center;">🌤️</div>
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #4caf50; text-align: center; margin-bottom: 0.5rem;">0.1mm</div>
+                        <div style="font-size: 0.9rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; margin-bottom: 0.75rem;">24-Hour Rainfall</div>
+                        <div style="font-size: 0.85rem; color: #388e3c; font-weight: 600; text-align: center; padding: 0.5rem; background: rgba(76, 175, 80, 0.15); border-radius: 8px;">
+                            ✅ Minimal - safe conditions
+                        </div>
+                    </div>
+                    
+                    <!-- Small cards: 4 smaller metrics -->
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💨</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #4caf50; margin-bottom: 0.25rem;">15 km/h</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Wind</div>
+                        <div style="font-size: 0.75rem; color: #388e3c; font-weight: 600; margin-top: 0.5rem;">Light</div>
+                    </div>
+                    
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌡️</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">31.2°C</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Temperature</div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 0.5rem;">Hot</div>
+                    </div>
+                    
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">💧</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #4caf50; margin-bottom: 0.25rem;">65%</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Humidity</div>
+                        <div style="font-size: 0.75rem; color: #388e3c; font-weight: 600; margin-top: 0.5rem;">Moderate</div>
+                    </div>
+                    
+                    <div class="spacious-small">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: #4caf50; margin-bottom: 0.25rem;">Clear</div>
+                        <div style="font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Status</div>
+                        <div style="font-size: 0.75rem; color: #388e3c; font-weight: 600; margin-top: 0.5rem;">Safe</div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <div class="section-title">✅ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Classes proceed as normal<br>
+                        • Bring sun protection (hat, sunscreen)<br>
+                        • Stay hydrated in warm weather<br>
+                        • No weather-related concerns
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional comparison: Different weather scenarios -->
+        <h2 style="color: white; text-align: center; margin: 3rem 0 2rem 0; font-size: 1.5rem;">
+            � Desktop/Web Layout (Side-by-Side)
+        </h2>
+        <p style="text-align: center; color: white; margin-bottom: 2rem; opacity: 0.9;">
+            Better use of horizontal space on larger screens
+        </p>
+
+        <div style="max-width: 900px; margin: 0 auto 3rem auto;">
+            <!-- DESKTOP LAYOUT - ORANGE ALERT -->
+            <div class="card">
+                <div class="card-title">DESKTOP LAYOUT: Orange Alert (Side-by-Side)</div>
+                
+                <div class="desktop-layout">
+                    <!-- LEFT SIDE: City + Alert -->
+                    <div class="desktop-left">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #2c3e50; text-align: center; margin-bottom: 1.5rem;">
+                            Muntinlupa
+                        </div>
+                        
+                        <div style="font-size: 4rem; text-align: center; margin-bottom: 1.5rem;">⚠️</div>
+                        
+                        <div style="background: #ff9800; color: white; padding: 1rem 2rem; border-radius: 25px; text-align: center; font-weight: 600; font-size: 1.1rem;">
+                            🟠 ALERT
+                        </div>
+                    </div>
+
+                    <!-- RIGHT SIDE: Weather Info -->
+                    <div class="desktop-right">
+                        <!-- Weather interpretation -->
+                        <div style="background: rgba(255, 152, 0, 0.1); border-left: 3px solid #ff9800; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                            <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem; font-size: 1rem;">Weather Summary:</div>
+                            <div style="color: #666; font-size: 0.95rem; line-height: 1.6;">Light rain expected with moderate winds. Humid conditions throughout the day.</div>
+                        </div>
+
+                        <!-- Weather metrics grid -->
+                        <div class="desktop-metrics">
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌧️</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">1.3mm</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Rainfall</div>
+                            </div>
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">💨</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">24 km/h</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Wind Speed</div>
+                            </div>
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌡️</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">29.7°C</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Temperature</div>
+                            </div>
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">💧</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">78%</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Humidity</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <div class="section-title">⚠️ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Check school announcements by 6 PM today<br>
+                        • Stay updated on weather and flood warnings<br>
+                        • Have emergency contacts ready
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESKTOP LAYOUT - RED HIGH RISK -->
+            <div class="card" style="margin-top: 2rem;">
+                <div class="card-title">DESKTOP LAYOUT: Red Alert (Side-by-Side)</div>
+                
+                <div class="desktop-layout">
+                    <!-- LEFT SIDE: City + Alert -->
+                    <div class="desktop-left">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #2c3e50; text-align: center; margin-bottom: 1.5rem;">
+                            Manila
+                        </div>
+                        
+                        <div style="font-size: 4rem; text-align: center; margin-bottom: 1.5rem;">⚠️</div>
+                        
+                        <div style="background: #f44336; color: white; padding: 1rem 2rem; border-radius: 25px; text-align: center; font-weight: 600; font-size: 1.1rem;">
+                            🔴 HIGH RISK
+                        </div>
+                    </div>
+
+                    <!-- RIGHT SIDE: Weather Info -->
+                    <div class="desktop-right">
+                        <!-- Weather interpretation -->
+                        <div style="background: rgba(244, 67, 54, 0.1); border-left: 3px solid #f44336; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                            <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem; font-size: 1rem;">Weather Summary:</div>
+                            <div style="color: #666; font-size: 0.95rem; line-height: 1.6;">Heavy rain and strong winds expected. Flooding likely in low-lying areas.</div>
+                        </div>
+
+                        <!-- Weather metrics grid -->
+                        <div class="desktop-metrics">
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌧️</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">45mm</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Rainfall</div>
+                            </div>
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">💨</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">65 km/h</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Wind Speed</div>
+                            </div>
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌡️</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">27.3°C</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Temperature</div>
+                            </div>
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">💧</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">92%</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Humidity</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <div class="section-title">🚨 RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Class suspension STRONGLY RECOMMENDED<br>
+                        • Avoid flood-prone areas<br>
+                        • Monitor emergency announcements closely
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESKTOP LAYOUT - GREEN NORMAL -->
+            <div class="card" style="margin-top: 2rem; background: #F0FFF4;">
+                <div class="card-title">DESKTOP LAYOUT: Green Normal (Side-by-Side)</div>
+                
+                <div class="desktop-layout">
+                    <!-- LEFT SIDE: City + Alert -->
+                    <div class="desktop-left">
+                        <div style="font-size: 2.5rem; font-weight: 700; color: #2c3e50; text-align: center; margin-bottom: 1.5rem;">
+                            Makati
+                        </div>
+                        
+                        <div style="background: #4caf50; color: white; padding: 1rem 2rem; border-radius: 25px; text-align: center; font-weight: 600; font-size: 1.1rem; margin-top: 3rem;">
+                            🟢 NORMAL
+                        </div>
+                    </div>
+
+                    <!-- RIGHT SIDE: Weather Info -->
+                    <div class="desktop-right">
+                        <!-- Weather interpretation -->
+                        <div style="background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4caf50; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                            <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem; font-size: 1rem;">Weather Summary:</div>
+                            <div style="color: #666; font-size: 0.95rem; line-height: 1.6;">Fair weather with light winds. No significant rain expected.</div>
+                        </div>
+
+                        <!-- Weather metrics grid -->
+                        <div class="desktop-metrics">
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌧️</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">0.1mm</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Rainfall</div>
+                            </div>
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">💨</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">15 km/h</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Wind Speed</div>
+                            </div>
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">🌡️</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">32.1°C</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Temperature</div>
+                            </div>
+                            <div class="desktop-metric-card">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">💧</div>
+                                <div style="font-size: 1.5rem; font-weight: 700; color: #2c3e50; margin-bottom: 0.25rem;">65%</div>
+                                <div style="font-size: 0.8rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Humidity</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 1.5rem;">
+                    <div class="section-title">✅ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Proceed with normal school operations<br>
+                        • Continue routine weather monitoring
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="color: white; text-align: center; margin: 3rem 0 2rem 0; font-size: 1.5rem;">
+            📱 Mobile Layout (Stacked)
+        </h2>
+        <p style="text-align: center; color: white; margin-bottom: 2rem; opacity: 0.9;">
+            Original Option B - works well on mobile
+        </p>
+
+        <!-- Additional comparison: Different weather scenarios -->
+        <h2 style="color: white; text-align: center; margin: 3rem 0 2rem 0; font-size: 1.5rem;">
+            📊 Different Weather Scenarios</h2>
+
+        <div class="grid" style="grid-template-columns: repeat(2, 1fr); max-width: 1000px; margin: 0 auto;">
+            <!-- RED TIER Example -->
+            <div class="card hybrid-b">
+                <div class="card-title">🔴 RED TIER - Severe Weather</div>
+                
+                <div class="city-name" style="font-size: 2rem; font-weight: 700; color: #2c3e50; text-align: center; margin: 0 0 1.5rem 0;">
+                    Manila
+                </div>
+                
+                <div style="font-size: 3rem; margin-bottom: 1rem; text-align: center;">⚠️</div>
+                
+                <div style="background: #f44336; color: white; padding: 0.75rem 1.5rem; border-radius: 25px; text-align: center; font-weight: 600; margin-bottom: 1.5rem;">
+                    🔴 HIGH RISK
+                </div>
+                
+                <div style="background: rgba(244, 67, 54, 0.1); border-left: 3px solid #f44336; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.6;">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">Weather Summary:</div>
+                    <div style="color: #666;">Heavy rain and strong winds expected. Flooding likely in low-lying areas.</div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 1.5rem 0;">
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">🌧️</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">45mm</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Rainfall</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">💨</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">65</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Wind km/h</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">🌡️</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">27.3°</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Max Temp</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">💧</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">92%</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Humidity</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">🚨 RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Class suspension STRONGLY RECOMMENDED<br>
+                        • Avoid flood-prone areas<br>
+                        • Monitor emergency announcements closely
+                    </div>
+                </div>
+            </div>
+
+            <!-- GREEN TIER Example -->
+            <div class="card hybrid-b" style="background: #F0FFF4;">
+                <div class="card-title">🟢 GREEN TIER - Normal Weather</div>
+                
+                <div class="city-name" style="font-size: 2rem; font-weight: 700; color: #2c3e50; text-align: center; margin: 0 0 1.5rem 0;">
+                    Makati
+                </div>
+                
+                <div style="background: #4caf50; color: white; padding: 0.75rem 1.5rem; border-radius: 25px; text-align: center; font-weight: 600; margin-bottom: 1.5rem;">
+                    🟢 NORMAL
+                </div>
+                
+                <div style="background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4caf50; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem; line-height: 1.6;">
+                    <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">Weather Summary:</div>
+                    <div style="color: #666;">Fair weather with light winds. No significant rain expected.</div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 1.5rem 0;">
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">🌧️</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">0.1mm</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Rainfall</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">💨</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">15</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Wind km/h</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0; border-right: 1px solid rgba(0,0,0,0.08);">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">🌡️</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">32.1°</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Max Temp</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <div style="font-size: 1.75rem; margin-bottom: 0.75rem; opacity: 0.8;">💧</div>
+                        <div style="font-size: 1.25rem; font-weight: 600; color: #2c3e50; margin-bottom: 0.25rem;">65%</div>
+                        <div style="font-size: 0.7rem; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Humidity</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">✅ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Proceed with normal school operations<br>
+                        • Continue routine weather monitoring
+                    </div>
+                </div>
+            </div>
+                
+                <div class="city-name">Muntinlupa</div>
+                
+                <div class="warning-icon">⚠️</div>
+                
+                <div class="alert-badge">🟠 ALERT</div>
+                
+                <div class="weather-metrics">
+                    <div class="metric">
+                        <div class="metric-icon">🌧️</div>
+                        <div class="metric-value">1.3mm</div>
+                        <div class="metric-label">Rainfall</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💨</div>
+                        <div class="metric-value">24 km/h</div>
+                        <div class="metric-label">Wind</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">🌡️</div>
+                        <div class="metric-value">29.7°C</div>
+                        <div class="metric-label">Temp</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💧</div>
+                        <div class="metric-value">78%</div>
+                        <div class="metric-label">Humidity</div>
+                    </div>
+                </div>
+
+                    <div class="section-title">✅ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Proceed with normal school operations<br>
+                        • Continue routine weather monitoring
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+            <div class="card option2">
+                <div class="card-title">OPTION 2: Spacious with Cards</div>
+                
+                <div class="city-name">Muntinlupa</div>
+                
+                <div class="warning-icon">⚠️</div>
+                
+                <div class="alert-badge">🟠 ALERT</div>
+                
+                <div class="weather-metrics">
+                    <div class="metric">
+                        <div class="metric-icon">🌧️</div>
+                        <div class="metric-value">1.3mm</div>
+                        <div class="metric-label">Rainfall (24h)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💨</div>
+                        <div class="metric-value">24 km/h</div>
+                        <div class="metric-label">Wind Speed</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">🌡️</div>
+                        <div class="metric-value">29.7°C</div>
+                        <div class="metric-label">Max Temperature</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💧</div>
+                        <div class="metric-value">78%</div>
+                        <div class="metric-label">Humidity</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">⚠️ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Check school announcements by 6 PM<br>
+                        • Stay updated on weather warnings
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTION 3: Horizontal -->
+            <div class="card option3">
+                <div class="card-title">OPTION 3: Horizontal Layout</div>
+                
+                <div class="header">
+                    <div class="city-name">Muntinlupa</div>
+                    
+                    <div class="alert-row">
+                        <div class="warning-icon">⚠️</div>
+                        <div class="alert-badge">🟠 ALERT</div>
+                    </div>
+                </div>
+                
+                <div class="weather-metrics">
+                    <div class="metric">
+                        <div class="metric-icon">🌧️</div>
+                        <div class="metric-value">1.3mm</div>
+                        <div class="metric-label">Rainfall</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💨</div>
+                        <div class="metric-value">24 km/h</div>
+                        <div class="metric-label">Wind</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">🌡️</div>
+                        <div class="metric-value">29.7°C</div>
+                        <div class="metric-label">Temp</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💧</div>
+                        <div class="metric-value">78%</div>
+                        <div class="metric-label">Humidity</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">⚠️ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Check school announcements by 6 PM<br>
+                        • Stay updated on weather warnings
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTION 4: Minimal -->
+            <div class="card option4">
+                <div class="card-title">OPTION 4: Minimal & Clean</div>
+                
+                <div class="city-name">MUNTINLUPA</div>
+                
+                <div class="alert-section">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="alert-badge">ALERT</div>
+                </div>
+                
+                <div class="weather-metrics">
+                    <div class="metric">
+                        <div class="metric-icon">🌧️</div>
+                        <div class="metric-value">1.3mm</div>
+                        <div class="metric-label">Rainfall</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💨</div>
+                        <div class="metric-value">24</div>
+                        <div class="metric-label">Wind km/h</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">🌡️</div>
+                        <div class="metric-value">29.7°</div>
+                        <div class="metric-label">Max Temp</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💧</div>
+                        <div class="metric-value">78%</div>
+                        <div class="metric-label">Humidity</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">⚠️ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Check school announcements by 6 PM<br>
+                        • Stay updated on weather warnings
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTION 5: Bold -->
+            <div class="card option5">
+                <div class="card-title">OPTION 5: Bold & Eye-catching</div>
+                
+                <div class="city-name">Muntinlupa</div>
+                
+                <div class="warning-icon">⚠️</div>
+                
+                <div class="alert-badge">🟠 ALERT</div>
+                
+                <div class="weather-metrics">
+                    <div class="metric">
+                        <div class="metric-icon">🌧️</div>
+                        <div class="metric-value">1.3mm</div>
+                        <div class="metric-label">Rainfall</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💨</div>
+                        <div class="metric-value">24</div>
+                        <div class="metric-label">Wind km/h</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">🌡️</div>
+                        <div class="metric-value">29.7°</div>
+                        <div class="metric-label">Temp</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💧</div>
+                        <div class="metric-value">78%</div>
+                        <div class="metric-label">Humidity</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">⚠️ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Check school announcements by 6 PM<br>
+                        • Stay updated on weather warnings
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTION 6: Card Within Card -->
+            <div class="card option6">
+                <div class="card-title">OPTION 6: Nested Cards</div>
+                
+                <div class="city-name">Muntinlupa</div>
+                
+                <div class="alert-container">
+                    <div class="warning-icon">⚠️</div>
+                    <div class="alert-badge">🟠 ALERT</div>
+                </div>
+                
+                <div class="weather-metrics">
+                    <div class="metric">
+                        <div class="metric-icon">🌧️</div>
+                        <div class="metric-value">1.3mm</div>
+                        <div class="metric-label">Rainfall (24h)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💨</div>
+                        <div class="metric-value">24 km/h</div>
+                        <div class="metric-label">Wind Speed</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">🌡️</div>
+                        <div class="metric-value">29.7°C</div>
+                        <div class="metric-label">Temperature</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-icon">💧</div>
+                        <div class="metric-value">78%</div>
+                        <div class="metric-label">Humidity</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">⚠️ RECOMMENDATION:</div>
+                    <div class="section-content">
+                        • Check school announcements by 6 PM<br>
+                        • Stay updated on weather warnings
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
